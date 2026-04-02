@@ -2,1199 +2,130 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AYU ARENA - THE INFINITE LEGACY FULL VERSION</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury QR Generator | Trial Version</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Prompt:wght@200;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #6366f1;
-            --gold-color: #fbbf24;
-            --bg-color: #020617;
-            --glass-bg: rgba(15, 23, 42, 0.95);
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --info-color: #3b82f6;
+            --gold: #d4af37;
+            --dark: #121212;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
-        * {
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body, html {
+        body {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            font-family: 'Kanit', sans-serif;
-            background: var(--bg-color);
-            color: white;
-            overflow: hidden;
-        }
-
-        /* --- NETWORK STATUS DISPLAY --- */
-        .network-status {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 5000;
             display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.85);
-            padding: 8px 15px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-family: 'Orbitron';
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--success-color);
-            box-shadow: 0 0 10px var(--success-color);
-        }
-
-        .status-dot.offline {
-            background: var(--danger-color);
-            box-shadow: 0 0 10px var(--danger-color);
-        }
-
-        /* --- CONAN ENTRANCE GATE --- */
-        #conan-gate {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: none;
-            perspective: 1200px;
-        }
-
-        .gate-door {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: #0f172a;
-            border: 2px solid #1e293b;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            transition: transform 1.8s cubic-bezier(0.7, 0, 0.3, 1), opacity 1.5s ease;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #1e1e1e 0%, #000 100%);
+            font-family: 'Prompt', sans-serif;
+            color: #fff;
         }
 
-        .gate-door-left {
-            left: 0;
-            transform-origin: left;
-            border-right: 5px solid var(--gold-color);
-        }
-
-        .gate-door-right {
-            right: 0;
-            transform-origin: right;
-            border-left: 5px solid var(--gold-color);
-        }
-
-        .gate-active .gate-door-left {
-            transform: rotateY(-115deg);
-            opacity: 0;
-        }
-
-        .gate-active .gate-door-right {
-            transform: rotateY(115deg);
-            opacity: 0;
-        }
-
-        .gate-text {
-            font-family: 'Orbitron';
-            font-size: 2.5rem;
-            color: var(--gold-color);
-            text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
-        }
-
-        /* --- MAIN UI PANELS --- */
         .container {
-            width: 95%;
-            max-width: 500px;
-            background: var(--glass-bg);
-            border-radius: 40px;
-            padding: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8);
-            z-index: 100;
-            max-height: 90vh;
-            overflow-y: auto;
-            text-align: center;
-        }
-
-        .hidden { display: none !important; }
-
-        /* --- WORLD SCREEN DISPLAY --- */
-        .game-screen {
-            width: 100%;
-            height: 240px;
+            padding: 3rem;
             border-radius: 30px;
-            border: 4px solid #1e293b;
-            position: relative;
-            overflow: hidden;
-            background-size: cover;
-            background-position: center;
-            margin: 20px 0;
-            background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800');
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transition: transform 0.3s ease;
         }
 
-        #pet-character {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 70px;
-            z-index: 10;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4));
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
         }
 
-        #pet-accessory {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 30px;
-            pointer-events: none;
+        .input-group {
+            margin-bottom: 2rem;
         }
 
-        #game-enemy {
-            position: absolute;
-            bottom: 30px;
-            right: -100px;
-            font-size: 50px;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+        input {
+            width: 100%;
+            padding: 12px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--gold);
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            transition: 0.3s;
         }
 
-        .location-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            border: 1.5px solid var(--primary-color);
-            color: var(--gold-color);
-            font-family: 'Orbitron';
+        input:focus {
+            border-bottom: 2px solid #fff;
             letter-spacing: 1px;
         }
 
-        /* --- VITAL STATUS BARS --- */
-        .status-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 15px 0;
-        }
-
-        .status-box {
-            text-align: left;
-        }
-
-        .status-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .bar-background {
-            width: 100%;
-            height: 12px;
-            background: #0f172a;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            width: 100%;
-            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .hp-fill { background: linear-gradient(90deg, #ef4444, #f87171); box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-        .energy-fill { background: linear-gradient(90deg, #3b82f6, #60a5fa); box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-
-        /* --- STATS GRID --- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            background: rgba(255,255,255,0.03);
-            padding: 12px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            font-size: 0.75rem;
-        }
-
-        .stat-value {
-            font-weight: 700;
-            color: var(--gold-color);
-            font-size: 1rem;
-        }
-
-        /* --- CHAT WORLD --- */
-        .world-chat {
-            height: 100px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            padding: 12px;
-            font-size: 0.8rem;
-            overflow-y: auto;
-            margin: 15px 0;
-            text-align: left;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            line-height: 1.5;
-            scrollbar-width: thin;
-        }
-
-        .chat-msg { margin-bottom: 4px; }
-        .chat-user { color: var(--info-color); font-weight: bold; }
-        .chat-sys { color: var(--gold-color); font-style: italic; }
-
-        /* --- BUTTONS --- */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .menu-btn {
-            border: none;
-            border-radius: 18px;
-            padding: 12px 5px;
-            color: white;
-            font-family: 'Kanit';
-            font-weight: 700;
-            cursor: pointer;
-            background: var(--primary-color);
-            border-bottom: 4px solid #3730a3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            gap: 4px;
-        }
-
-        .menu-btn:active {
-            transform: translateY(3px);
-            border-bottom-width: 1px;
-        }
-
-        .menu-btn-gold { background: var(--gold-color); color: #000; border-bottom-color: #b45309; }
-        .menu-btn-success { background: var(--success-color); border-bottom-color: #064e3b; }
-        
-        .btn-full { grid-column: span 3; margin-top: 5px; }
-
-        /* --- FORMS --- */
-        input[type="text"] {
-            width: 100%;
+        #qrcode {
+            background: #fff;
             padding: 15px;
             border-radius: 15px;
-            border: 2px solid var(--primary-color);
-            background: rgba(0,0,0,0.6);
-            color: white;
-            margin: 10px 0;
-            text-align: center;
-            font-size: 1.1rem;
-            font-family: 'Kanit';
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
 
-        /* --- MODALS & OVERLAYS --- */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        .status-text {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 1.5rem;
+            font-weight: 200;
         }
 
-        #death-overlay {
-            z-index: 10000;
-            background: radial-gradient(circle, #450a0a 0%, #020617 100%);
-        }
-
-        .death-title {
-            font-family: 'Orbitron';
-            font-size: 4rem;
-            color: var(--danger-color);
-            margin: 0;
-            text-shadow: 0 0 30px var(--danger-color);
-        }
-
-        /* --- MINI GAME ELEMENTS --- */
-        .falling-star {
-            position: absolute;
-            font-size: 28px;
-            z-index: 20;
-            pointer-events: none;
-        }
-
-        .jump-animation {
-            animation: petJump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @keyframes petJump {
-            0%, 100% { bottom: 30px; }
-            50% { bottom: 140px; }
-        }
-
-        #timer-display {
-            font-family: 'Orbitron';
-            font-size: 2.5rem;
-            color: var(--danger-color);
-            margin-bottom: 15px;
-            font-weight: 900;
-        }
-
-        #floating-score {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Orbitron';
-            font-size: 4rem;
-            color: var(--gold-color);
-            z-index: 50;
-            text-shadow: 0 0 20px black;
+        canvas {
+            max-width: 100%;
         }
     </style>
 </head>
 <body>
 
-    <div class="network-status">
-        <div id="net-indicator" class="status-dot"></div>
-        <span id="ping-text">PING: -- MS</span>
-    </div>
-
-    <div id="conan-gate">
-        <div class="gate-door gate-door-left"><div class="gate-text">AYU</div></div>
-        <div class="gate-door gate-door-right"><div class="gate-text">ARENA</div></div>
-    </div>
-
-    <div id="death-overlay" class="modal-overlay">
-        <h1 class="death-title">DIED</h1>
-        <p id="death-description" style="margin: 20px; font-size: 1.2rem;"></p>
-        <button class="menu-btn menu-btn-gold" style="width: 250px; padding: 20px;" onclick="handleRebirth()">REBIRTH (GENERATION 1)</button>
-    </div>
-
-    <div id="screen-language" class="container">
-        <h1 style="font-family: 'Orbitron'; color: var(--gold-color); font-size: 2rem;">WELCOME</h1>
-        <p>Please select your language</p>
-        <p>กรุณาเลือกภาษาเพื่อเริ่มต้น</p>
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px;">
-            <button class="menu-btn menu-btn-gold" onclick="initializeLanguage('th')">🇹🇭 ภาษาไทย (THAI)</button>
-            <button class="menu-btn" onclick="initializeLanguage('en')">🇺🇸 ENGLISH (USA)</button>
-        </div>
-    </div>
-
-    <div id="screen-register" class="container hidden">
-        <h2 id="lang-reg-title" style="font-family: 'Orbitron'; color: var(--primary-color);">PLAYER ENTRY</h2>
-        <div style="text-align: left; margin-bottom: 15px;">
-            <label id="lang-label-name">Player Name:</label>
-            <input type="text" id="input-player-name" placeholder="Ex. AyuPlayer">
-            <label id="lang-label-id">Player ID:</label>
-            <input type="text" id="input-player-id" placeholder="Ex. ID-8899">
+    <div class="container">
+        <h1>QR LUXE</h1>
+        <div class="input-group">
+            <input type="text" id="text" placeholder="พิมพ์ข้อความที่นี่..." oninput="generateQR()">
         </div>
         
-        <p id="lang-choose-pet" style="margin-top: 20px; font-weight: bold;">Choose your companion:</p>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
-            <button class="menu-btn" style="font-size: 2rem;" onclick="selectPetEmoji('🐶', this)">🐶</button>
-            <button class="menu-btn" style="font-size: 2rem;" onclick="selectPetEmoji('🐱', this)">🐱</button>
-            <button class="menu-btn" style="font-size: 2rem;" onclick="selectPetEmoji('🐼', this)">🐼</button>
-        </div>
+        <div id="qrcode"></div>
         
-        <button id="btn-start-game" class="menu-btn menu-btn-gold btn-full" style="padding: 20px;" onclick="processRegistration()">INITIALIZE GATE</button>
-    </div>
-
-    <div id="screen-hub" class="container hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Orbitron'; margin-bottom: 10px; color: var(--gold-color); font-size: 0.8rem;">
-            <div>USER: <span id="display-id">---</span></div>
-            <div style="background: rgba(0,0,0,0.4); padding: 5px 12px; border-radius: 10px; border: 1px solid var(--gold-color);">
-                💰 <span id="display-coins">0</span>
-            </div>
-        </div>
-
-        <div class="game-screen" id="world-background">
-            <div id="display-location" class="location-badge">THAILAND</div>
-            <div id="pet-character">
-                <div id="pet-accessory"></div>
-                <span id="pet-visual">🐶</span>
-            </div>
-            <div id="game-enemy">🌵</div>
-            <div id="floating-score" class="hidden">0</div>
-        </div>
-
-        <div class="status-container">
-            <div class="status-box">
-                <div class="status-label">
-                    <span>HP (HEALTH)</span>
-                    <span><span id="text-hp">100</span>%</span>
-                </div>
-                <div class="bar-background">
-                    <div id="bar-hp" class="bar-fill hp-fill"></div>
-                </div>
-            </div>
-            <div class="status-box">
-                <div class="status-label">
-                    <span>ENERGY (FOOD)</span>
-                    <span><span id="text-energy">100</span>%</span>
-                </div>
-                <div class="bar-background">
-                    <div id="bar-energy" class="bar-fill energy-fill"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span id="lang-stat-food">Food</span>
-                <span id="display-food" class="stat-value">0</span>
-            </div>
-            <div class="stat-item">
-                <span id="lang-stat-age">Age</span>
-                <span id="display-age" class="stat-value">0.0</span>
-            </div>
-            <div class="stat-item">
-                <span id="lang-stat-gen">Generation</span>
-                <span id="display-gen" class="stat-value">1</span>
-            </div>
-        </div>
-
-        <div class="world-chat" id="chat-scroller"></div>
-
-        <div class="action-grid">
-            <button class="menu-btn" onclick="executeFeed()">
-                <span>🍗</span><span id="lang-btn-feed">Feed</span>
-            </button>
-            <button class="menu-btn" onclick="openModal('modal-games')">
-                <span>🎮</span><span id="lang-btn-game">Games</span>
-            </button>
-            <button class="menu-btn" onclick="openModal('modal-shop')">
-                <span>🛒</span><span id="lang-btn-shop">Shop</span>
-            </button>
-            <button class="menu-btn menu-btn-gold" onclick="openWordBattleLobby()">
-                <span>🤖</span>Word Battle
-            </button>
-            <button class="menu-btn menu-btn-gold" onclick="openModal('modal-world')">
-                <span>🌍</span><span id="lang-btn-travel">Travel</span>
-            </button>
-            <button class="menu-btn menu-btn-gold" onclick="openModal('modal-dress')">
-                <span>👒</span><span id="lang-btn-dress">Dress</span>
-            </button>
-            <button class="menu-btn" onclick="openModal('modal-code')">
-                <span>🔑</span>Code
-            </button>
-            <button class="menu-btn" onclick="openModal('modal-gacha')">
-                <span>🎲</span>Gacha
-            </button>
-            <button id="btn-marry" class="menu-btn menu-btn-success hidden" onclick="handleMarriage()">
-                <span>💍</span>Marry (Gen Up)
-            </button>
-        </div>
-    </div>
-
-    <div id="modal-games" class="modal-overlay">
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <h2 id="lang-game-title">MINI GAMES</h2>
-            <div style="display: grid; gap: 15px;">
-                <button class="menu-btn" style="padding: 20px;" onclick="startStarCatcher()">⭐ Star Catcher (Get Coins)</button>
-                <button class="menu-btn" style="padding: 20px;" onclick="startDinoRun()">🏃 Dino Run (Survival)</button>
-                <button class="menu-btn menu-btn-gold" onclick="closeAllModals()">Back to Hub</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-word-lobby" class="modal-overlay">
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <h2 style="font-family: 'Orbitron';">AI WORD BATTLE</h2>
-            <p>Select your language to battle with AI</p>
-            <div style="display: grid; gap: 15px;">
-                <button class="menu-btn menu-btn-gold" style="padding: 20px;" onclick="initiateWordBattle('TH')">🇹🇭 ภาษาไทย (THAI)</button>
-                <button class="menu-btn" style="padding: 20px;" onclick="initiateWordBattle('EN')">🇺🇸 ENGLISH (USA)</button>
-                <button class="menu-btn" onclick="closeAllModals()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-word-play" class="modal-overlay">
-        <div id="timer-display">60</div>
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <div id="ai-current-word" style="font-size: 2.2rem; background: #000; padding: 20px; border-radius: 20px; margin-bottom: 15px; color: var(--gold-color); font-weight: bold; border: 2px solid var(--primary-color);">
-                ---
-            </div>
-            <p style="font-size: 1.1rem;">Your word must start with: <b id="next-char-indicator" style="color: var(--danger-color); font-size: 1.5rem;">?</b></p>
-            <input type="text" id="input-word-battle" placeholder="Type word here..." autocomplete="off">
-            <button class="menu-btn menu-btn-success btn-full" style="padding: 15px;" onclick="processWordSubmission()">Submit Word (Enter)</button>
-            <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 15px;">* มั่วไม่ได้! ต้องเป็นคำศัพท์จริงเท่านั้น</p>
-        </div>
-    </div>
-
-    <div id="modal-shop" class="modal-overlay">
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <h2>AYU SHOP</h2>
-            <p>Your Coins: 💰<span id="shop-coin-display">0</span></p>
-            <div style="display: grid; gap: 10px;">
-                <button class="menu-btn" onclick="purchaseItem('food', 1, 50)">🍗 Buy Food x1 (50 Coins)</button>
-                <button class="menu-btn" onclick="purchaseItem('food', 10, 450)">🍗 Buy Food x10 (450 Coins)</button>
-                <button class="menu-btn menu-btn-gold" onclick="closeAllModals()">Exit Shop</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-world" class="modal-overlay">
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <h2>WORLD TRAVEL</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="menu-btn" onclick="executeTravel('JAPAN', 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800', 300)">🇯🇵 JAPAN (300)</button>
-                <button class="menu-btn" onclick="executeTravel('USA', 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800', 500)">🇺🇸 USA (500)</button>
-                <button class="menu-btn" onclick="executeTravel('EGYPT', 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=800', 400)">🇪🇬 EGYPT (400)</button>
-                <button class="menu-btn" onclick="executeTravel('PARIS', 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800', 600)">🇫🇷 PARIS (600)</button>
-            </div>
-            <button class="menu-btn menu-btn-gold btn-full" style="margin-top: 15px;" onclick="closeAllModals()">Cancel</button>
-        </div>
-    </div>
-
-    <div id="modal-gacha" class="modal-overlay">
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <h2>GACHA SYSTEM</h2>
-            <div id="gacha-result-box" style="height: 60px; font-size: 1.5rem; color: var(--gold-color);">Ready?</div>
-            <button class="menu-btn menu-btn-gold btn-full" onclick="executeGachaRoll()">Roll Gacha (100 Coins)</button>
-            <button class="menu-btn btn-full" onclick="closeAllModals()">Close</button>
-        </div>
-    </div>
-
-    <div id="modal-code" class="modal-overlay">
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <h2>REDEEM CODE</h2>
-            <input type="text" id="input-promo-code" placeholder="ENTER CODE">
-            <button class="menu-btn menu-btn-success btn-full" onclick="validatePromoCode()">Redeem Now</button>
-            <button class="menu-btn btn-full" style="margin-top: 10px;" onclick="closeAllModals()">Back</button>
-        </div>
-    </div>
-
-    <div id="modal-dress" class="modal-overlay">
-        <div class="container" style="position: relative; transform: none; left: 0; top: 0;">
-            <h2>DRESS UP</h2>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                <button class="menu-btn" onclick="setAccessory('👑')">👑</button>
-                <button class="menu-btn" onclick="setAccessory('🎩')">🎩</button>
-                <button class="menu-btn" onclick="setAccessory('👒')">👒</button>
-                <button class="menu-btn" onclick="setAccessory('🎀')">🎀</button>
-                <button class="menu-btn" onclick="setAccessory('👓')">👓</button>
-                <button class="menu-btn" onclick="setAccessory('')">REMOVE</button>
-            </div>
-            <button class="menu-btn menu-btn-gold btn-full" style="margin-top: 15px;" onclick="closeAllModals()">Back</button>
-        </div>
+        <p class="status-text">พิมพ์ "โคนัน" หรือข้อความที่คุณต้องการด้านบนได้เลย</p>
     </div>
 
     <script>
-        /* ==========================================================
-           1. CORE DATA STRUCTURE (GLOBAL STATE)
-           ========================================================== */
-        let gameState = {
-            isRegistered: false,
-            language: 'th',
-            playerName: '',
-            playerID: '',
-            petEmoji: '🐶',
-            coins: 200,
-            foodCount: 5,
-            age: 0.0,
-            generation: 1,
-            hp: 100,
-            energy: 100,
-            locationName: 'THAILAND',
-            activeAccessory: '',
-            isGameActive: false,
-            usedWordsInSession: []
-        };
+        const qrContainer = document.getElementById("qrcode");
+        const qrInput = document.getElementById("text");
 
-        let coreTimer;
-        let wordBattleTimer;
-        let currentAiWord = "";
-        let battleTimeRemaining = 60;
-        let currentWordLanguage = 'EN';
-
-        /* --- DICTIONARY DATA (Check Valid Words) --- */
-        const dictEN = ["APPLE", "ANT", "BIRD", "BAT", "CAT", "DOG", "EGG", "FISH", "GOAT", "HAT", "ICE", "JET", "KING", "LION", "MOON", "NEST", "OWL", "PIG", "QUEEN", "RAT", "SUN", "TIGER", "UMBRELLA", "VAN", "WHALE", "XYLOPHONE", "YOYO", "ZEBRA", "X-RAY", "YELLOW", "QUARTZ", "POWER", "GOLD", "GAME", "LOVE", "HOME", "TIME"];
-        const dictTH = ["กางเกง", "ไก่", "ไข่", "ควาย", "งู", "จาน", "ดาว", "เต่า", "ทหาร", "ธง", "นก", "บาน", "ปลา", "ผึ้ง", "ม้า", "ยักษ์", "เรือ", "ลิง", "แหวน", "โอ่ง", "ฮูก", "กะลา", "รวย", "รัก", "บ้าน", "เวลา", "ทอง", "ขวด", "มะม่วง", "ทะเล", "ส้ม"];
-
-        const translations = {
-            th: {
-                regTitle: "ลงทะเบียนผู้เล่น",
-                labelName: "ชื่อผู้เล่น:",
-                labelId: "ไอดีผู้เล่น:",
-                choosePet: "เลือกสัตว์เลี้ยงคู่ใจ:",
-                btnLaunch: "เริ่มต้นระบบประตู",
-                statFood: "อาหารที่มี",
-                statAge: "อายุ",
-                statGen: "รุ่น (Gen)",
-                btnFeed: "ป้อนอาหาร",
-                btnGame: "มินิเกม",
-                btnShop: "ร้านค้า",
-                btnTravel: "ท่องเที่ยว",
-                btnDress: "แต่งตัว",
-                welcomeMsg: "[ระบบ] ยินดีต้อนรับสู่ AYU ARENA!",
-                deathMsg: "สัตว์เลี้ยงของคุณจากไปแล้วเนื่องจากขาดสารอาหาร..."
-            },
-            en: {
-                regTitle: "PLAYER REGISTRATION",
-                labelName: "Player Name:",
-                labelId: "Player ID:",
-                choosePet: "Choose your pet:",
-                btnLaunch: "INITIALIZE GATE",
-                statFood: "Food",
-                statAge: "Age",
-                statGen: "Gen",
-                btnFeed: "Feed",
-                btnGame: "Games",
-                btnShop: "Shop",
-                btnTravel: "Travel",
-                btnDress: "Dress Up",
-                welcomeMsg: "[System] Welcome to AYU ARENA world!",
-                deathMsg: "Your pet has passed away due to starvation..."
-            }
-        };
-
-        /* ==========================================================
-           2. INITIALIZATION & REGISTRATION LOGIC
-           ========================================================== */
-        function initializeLanguage(lang) {
-            gameState.language = lang;
-            document.getElementById('screen-language').classList.add('hidden');
-            document.getElementById('screen-register').classList.remove('hidden');
-            
-            const t = translations[lang];
-            document.getElementById('lang-reg-title').innerText = t.regTitle;
-            document.getElementById('lang-label-name').innerText = t.labelName;
-            document.getElementById('lang-label-id').innerText = t.labelId;
-            document.getElementById('lang-choose-pet').innerText = t.choosePet;
-            document.getElementById('btn-start-game').innerText = t.btnLaunch;
-            
-            // Stats translation
-            document.getElementById('lang-stat-food').innerText = t.statFood;
-            document.getElementById('lang-stat-age').innerText = t.statAge;
-            document.getElementById('lang-stat-gen').innerText = t.statGen;
-            
-            // Action buttons
-            document.getElementById('lang-btn-feed').innerText = t.btnFeed;
-            document.getElementById('lang-btn-game').innerText = t.btnGame;
-            document.getElementById('lang-btn-shop').innerText = t.btnShop;
-            document.getElementById('lang-btn-travel').innerText = t.btnTravel;
-            document.getElementById('lang-btn-dress').innerText = t.btnDress;
-            document.getElementById('death-description').innerText = t.deathMsg;
-        }
-
-        function selectPetEmoji(emoji, btnElement) {
-            gameState.petEmoji = emoji;
-            // Visual feedback
-            const btns = btnElement.parentElement.querySelectorAll('.menu-btn');
-            btns.forEach(b => b.style.borderColor = 'transparent');
-            btnElement.style.borderColor = 'var(--gold-color)';
-            btnElement.style.borderWidth = '3px';
-        }
-
-        function processRegistration() {
-            const nameInput = document.getElementById('input-player-name').value.trim();
-            const idInput = document.getElementById('input-player-id').value.trim();
-
-            if (!nameInput || !idInput) {
-                alert(gameState.language === 'th' ? "กรุณากรอกข้อมูลให้ครบถ้วน!" : "Please fill in all fields!");
-                return;
-            }
-
-            gameState.playerName = nameInput;
-            gameState.playerID = idInput;
-            gameState.isRegistered = true;
-
-            // Trigger Conan Gate Animation
-            const gate = document.getElementById('conan-gate');
-            gate.style.display = 'block';
-            
-            setTimeout(() => {
-                gate.classList.add('gate-active');
-                setTimeout(() => {
-                    gate.style.display = 'none';
-                    document.getElementById('screen-register').classList.add('hidden');
-                    document.getElementById('screen-hub').classList.remove('hidden');
-                    startCoreEngine();
-                }, 1800);
-            }, 100);
-        }
-
-        /* ==========================================================
-           3. CORE ENGINE (TICK SYSTEM)
-           ========================================================== */
-        function startCoreEngine() {
-            document.getElementById('display-id').innerText = gameState.playerID;
-            addChatMessage(translations[gameState.language].welcomeMsg, true);
-
-            coreTimer = setInterval(() => {
-                if (gameState.isRegistered && !gameState.isGameActive) {
-                    // 1. Decrease Energy (Hunger)
-                    gameState.energy = Math.max(0, gameState.energy - 1.2);
-
-                    // 2. If Energy is 0, Decrease HP (Starving)
-                    if (gameState.energy <= 0) {
-                        gameState.hp = Math.max(0, gameState.hp - 3.5);
-                    }
-
-                    // 3. Increment Age
-                    gameState.age += 0.05;
-
-                    // 4. Check Marriage/Gen Up Condition (Age 10+)
-                    if (gameState.age >= 10) {
-                        document.getElementById('btn-marry').classList.remove('hidden');
-                    }
-
-                    // 5. Check Death
-                    if (gameState.hp <= 0) {
-                        triggerDeath();
-                    }
-
-                    // 6. Simulate Network PING
-                    const mockPing = Math.floor(Math.random() * 25) + 12;
-                    document.getElementById('ping-text').innerText = `PING: ${mockPing} MS`;
-                    
-                    // 7. Auto Chat Simulation
-                    if (Math.random() > 0.85) simulateWorldChat();
-
-                    updateUI();
-                    saveGame();
-                }
-            }, 5000); // Ticks every 5 seconds
-        }
-
-        function updateUI() {
-            // Coins & Main Stats
-            document.getElementById('display-coins').innerText = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('display-food').innerText = gameState.foodCount;
-            document.getElementById('display-age').innerText = gameState.age.toFixed(1);
-            document.getElementById('display-gen').innerText = gameState.generation;
-            
-            // Bars
-            document.getElementById('text-hp').innerText = Math.ceil(gameState.hp);
-            document.getElementById('bar-hp').style.width = gameState.hp + "%";
-            
-            document.getElementById('text-energy').innerText = Math.ceil(gameState.energy);
-            document.getElementById('bar-energy').style.width = gameState.energy + "%";
-            
-            // Character
-            document.getElementById('pet-visual').innerText = gameState.petEmoji;
-            document.getElementById('pet-accessory').innerText = gameState.activeAccessory;
-            document.getElementById('display-location').innerText = gameState.locationName;
-            
-            // Shop data
-            document.getElementById('shop-coin-display').innerText = Math.floor(gameState.coins).toLocaleString();
-        }
-
-        /* ==========================================================
-           4. ACTION METHODS (FEED, SHOP, TRAVEL, ETC.)
-           ========================================================== */
-        function executeFeed() {
-            if (gameState.foodCount > 0) {
-                if (gameState.energy >= 100) {
-                    alert(gameState.language === 'th' ? "น้องยังอิ่มอยู่เลย!" : "Pet is already full!");
-                    return;
-                }
-                gameState.foodCount--;
-                gameState.energy = Math.min(100, gameState.energy + 25);
-                gameState.hp = Math.min(100, gameState.hp + 5);
-                updateUI();
-                addChatMessage(`[System] ${gameState.playerName} ป้อนอาหารให้สัตว์เลี้ยง`, true);
-            } else {
-                alert(gameState.language === 'th' ? "อาหารหมดแล้ว! ไปซื้อที่ร้านค้าสิ" : "Out of food! Go to shop.");
-            }
-        }
-
-        function purchaseItem(type, amount, price) {
-            if (gameState.coins >= price) {
-                gameState.coins -= price;
-                if (type === 'food') gameState.foodCount += amount;
-                updateUI();
-                alert(gameState.language === 'th' ? "ซื้อสำเร็จ!" : "Purchase Successful!");
-            } else {
-                alert(gameState.language === 'th' ? "เงินไม่พอจ้า!" : "Not enough coins!");
-            }
-        }
-
-        function executeTravel(locName, imgUrl, cost) {
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                gameState.locationName = locName;
-                document.getElementById('world-background').style.backgroundImage = `url('${imgUrl}')`;
-                closeAllModals();
-                updateUI();
-                addChatMessage(`[Travel] เดินทางไปถึง ${locName} แล้ว!`, true);
-            } else {
-                alert("Coins not enough!");
-            }
-        }
-
-        function setAccessory(acc) {
-            gameState.activeAccessory = acc;
-            updateUI();
-            saveGame();
-        }
-
-        function handleMarriage() {
-            if (confirm(gameState.language === 'th' ? "ต้องการแต่งงานเพื่อเริ่มรุ่นใหม่ใช่ไหม? (อายุจะรีเซ็ต)" : "Marry and start next generation? (Age will reset)")) {
-                gameState.generation++;
-                gameState.age = 0;
-                gameState.hp = 100;
-                gameState.energy = 100;
-                document.getElementById('btn-marry').classList.add('hidden');
-                updateUI();
-                saveGame();
-                addChatMessage(`[Legacy] ยินดีด้วย! คุณเข้าสู่ Generation ${gameState.generation}`, true);
-            }
-        }
-
-        /* ==========================================================
-           5. WORD BATTLE AI SYSTEM (NEW & FULL)
-           ========================================================== */
-        function openWordBattleLobby() {
-            openModal('modal-word-lobby');
-        }
-
-        function initiateWordBattle(mode) {
-            currentWordLanguage = mode;
-            gameState.isGameActive = true;
-            battleTimeRemaining = 60;
-            gameState.usedWordsInSession = [];
-            
-            document.getElementById('modal-word-lobby').classList.add('hidden');
-            document.getElementById('modal-word-play').classList.remove('hidden');
-            
-            // Set first word
-            currentAiWord = (mode === 'EN') ? "APPLE" : "กางเกง";
-            gameState.usedWordsInSession.push(currentAiWord);
-            
-            refreshWordBattleUI();
-            
-            // Start Timer
-            document.getElementById('timer-display').innerText = battleTimeRemaining;
-            wordBattleTimer = setInterval(() => {
-                battleTimeRemaining--;
-                document.getElementById('timer-display').innerText = battleTimeRemaining;
-                if (battleTimeRemaining <= 0) {
-                    endWordBattle("TIME OUT!");
-                }
-            }, 1000);
-        }
-
-        function refreshWordBattleUI() {
-            document.getElementById('ai-current-word').innerText = currentAiWord;
-            const lastChar = currentAiWord.slice(-1);
-            document.getElementById('next-char-indicator').innerText = lastChar.toUpperCase();
-        }
-
-        function processWordSubmission() {
-            const inputField = document.getElementById('input-word-battle');
-            const userWord = inputField.value.toUpperCase().trim();
-            const lastCharRequired = currentAiWord.slice(-1).toUpperCase();
-
-            // 1. Basic Validation
-            if (userWord.length < 2) return;
-
-            // 2. Rule: Must start with last char
-            if (!userWord.startsWith(lastCharRequired)) {
-                alert(gameState.language === 'th' ? "ต้องขึ้นต้นด้วย " + lastCharRequired : "Must start with " + lastCharRequired);
-                return;
-            }
-
-            // 3. Rule: No duplicates
-            if (gameState.usedWordsInSession.includes(userWord)) {
-                alert("ซ้ำ! / Already used!");
-                return;
-            }
-
-            // 4. Rule: MUST BE A REAL WORD (Dictionary Check)
-            const dictionary = (currentWordLanguage === 'EN') ? dictEN : dictTH;
-            // Note: For demo we use a list, but we allow unknown words if they are long enough to simulate "new words"
-            const isKnown = dictionary.includes(userWord);
-            const isReasonable = (currentWordLanguage === 'EN' && userWord.length >= 3) || (currentWordLanguage === 'TH' && userWord.length >= 2);
-
-            if (isKnown || isReasonable) {
-                // Success
-                gameState.coins += 25;
-                gameState.usedWordsInSession.push(userWord);
-                addChatMessage(`[Battle] ${userWord} (+25💰)`);
-                inputField.value = "";
-                
-                // AI Response
-                setTimeout(() => {
-                    const nextTargetChar = userWord.slice(-1).toUpperCase();
-                    const aiOptions = dictionary.filter(w => w.startsWith(nextTargetChar) && !gameState.usedWordsInSession.includes(w));
-                    
-                    if (aiOptions.length > 0) {
-                        currentAiWord = aiOptions[Math.floor(Math.random() * aiOptions.length)];
-                        gameState.usedWordsInSession.push(currentAiWord);
-                        refreshWordBattleUI();
-                    } else {
-                        // AI is stuck, pick a random word to continue
-                        currentAiWord = (currentWordLanguage === 'EN') ? "GAME" : "รัก";
-                        refreshWordBattleUI();
-                    }
-                    updateUI();
-                }, 600);
-            } else {
-                alert("คำนี้มั่วเกินไป! ไม่มีในพจนานุกรม");
-            }
-        }
-
-        function endWordBattle(reason) {
-            clearInterval(wordBattleTimer);
-            gameState.isGameActive = false;
-            alert("GAME OVER: " + reason);
-            closeAllModals();
-        }
-
-        /* ==========================================================
-           6. MINI GAMES: STAR CATCHER & DINO RUN
-           ========================================================== */
-        function startStarCatcher() {
-            closeAllModals();
-            gameState.isGameActive = true;
-            let score = 0;
-            const scoreDisplay = document.getElementById('floating-score');
-            scoreDisplay.classList.remove('hidden');
-            scoreDisplay.innerText = "0";
-
-            let spawnRate = setInterval(() => {
-                const star = document.createElement('div');
-                star.className = 'falling-star';
-                star.innerText = "⭐";
-                star.style.left = Math.random() * 90 + "%";
-                star.style.top = "0px";
-                document.getElementById('world-background').appendChild(star);
-
-                let fallMove = setInterval(() => {
-                    const topPos = parseInt(star.style.top);
-                    star.style.top = (topPos + 6) + "px";
-
-                    const petRect = document.getElementById('pet-character').getBoundingClientRect();
-                    const starRect = star.getBoundingClientRect();
-
-                    if (starRect.bottom >= petRect.top && starRect.left < petRect.right && starRect.right > petRect.left) {
-                        score++;
-                        scoreDisplay.innerText = score;
-                        star.remove();
-                        clearInterval(fallMove);
-                    }
-
-                    if (topPos > 240) {
-                        star.remove();
-                        clearInterval(fallMove);
-                    }
-                }, 30);
-            }, 800);
-
-            setTimeout(() => {
-                clearInterval(spawnRate);
-                gameState.isGameActive = false;
-                scoreDisplay.classList.add('hidden');
-                const earnings = score * 15;
-                gameState.coins += earnings;
-                gameState.energy = Math.max(0, gameState.energy - 10);
-                updateUI();
-                alert(`Finished! You caught ${score} stars and earned 💰${earnings}`);
-            }, 10000);
-        }
-
-        function startDinoRun() {
-            closeAllModals();
-            gameState.isGameActive = true;
-            let survivalScore = 0;
-            const pet = document.getElementById('pet-character');
-            const enemy = document.getElementById('game-enemy');
-            const scoreDisplay = document.getElementById('floating-score');
-            
-            scoreDisplay.classList.remove('hidden');
-            scoreDisplay.innerText = "0";
-
-            // Jump Mechanic
-            const triggerJump = () => {
-                if (!pet.classList.contains('jump-animation')) {
-                    pet.classList.add('jump-animation');
-                    setTimeout(() => pet.classList.remove('jump-animation'), 600);
-                }
-            };
-            
-            window.addEventListener('mousedown', triggerJump);
-            window.addEventListener('touchstart', triggerJump);
-
-            let gameLoop = setInterval(() => {
-                let enemyRight = parseInt(window.getComputedStyle(enemy).right);
-                
-                // Enemy Movement
-                if (enemyRight > 550) {
-                    enemyRight = -100;
-                    survivalScore++;
-                    scoreDisplay.innerText = survivalScore;
-                }
-                enemy.style.right = (enemyRight + 10) + "px";
-
-                // Collision Detection
-                const petBottom = parseInt(window.getComputedStyle(pet).bottom);
-                // If enemy is under pet (right position between ~220-280 is the center area)
-                if (enemyRight > 210 && enemyRight < 270 && petBottom < 80) {
-                    clearInterval(gameLoop);
-                    gameState.isGameActive = false;
-                    scoreDisplay.classList.add('hidden');
-                    enemy.style.right = "-100px";
-                    
-                    const bonus = survivalScore * 10;
-                    gameState.coins += bonus;
-                    gameState.energy = Math.max(0, gameState.energy - 15);
-                    
-                    alert("Game Over! Score: " + survivalScore + " | Earned: 💰" + bonus);
-                    window.removeEventListener('mousedown', triggerJump);
-                    window.removeEventListener('touchstart', triggerJump);
-                    updateUI();
-                }
-            }, 25);
-        }
-
-        /* ==========================================================
-           7. SYSTEM UTILITIES (GACHA, CODES, CHAT, SAVE)
-           ========================================================== */
-        function executeGachaRoll() {
-            if (gameState.coins >= 100) {
-                gameState.coins -= 100;
-                const roll = Math.random();
-                let prize = "";
-                
-                if (roll > 0.95) {
-                    prize = "👑 LEGENDARY CROWN";
-                    gameState.activeAccessory = "👑";
-                } else if (roll > 0.7) {
-                    prize = "🍗 FOOD x10";
-                    gameState.foodCount += 10;
-                } else if (roll > 0.4) {
-                    prize = "💰 300 COINS";
-                    gameState.coins += 300;
-                } else {
-                    prize = "💩 NOTHING (BAD LUCK)";
-                }
-                
-                document.getElementById('gacha-result-box').innerText = prize;
-                updateUI();
-            } else {
-                alert("Not enough coins!");
-            }
-        }
-
-        function validatePromoCode() {
-            const code = document.getElementById('input-promo-code').value.toUpperCase();
-            if (code === "AYU2026") {
-                gameState.coins += 1000;
-                gameState.foodCount += 5;
-                alert("CONGRATS! Received 1000💰 and 5🍗");
-                closeAllModals();
-            } else if (code === "GODMODE") {
-                gameState.hp = 1000;
-                gameState.energy = 1000;
-                alert("GOD MODE ACTIVATED");
-                closeAllModals();
-            } else {
-                alert("INVALID CODE");
-            }
-            document.getElementById('input-promo-code').value = "";
-            updateUI();
-        }
-
-        function triggerDeath() {
-            gameState.isRegistered = false;
-            clearInterval(coreTimer);
-            document.getElementById('death-overlay').style.display = 'flex';
-        }
-
-        function handleRebirth() {
-            localStorage.clear();
-            location.reload();
-        }
-
-        function simulateWorldChat() {
-            const users = ["Panda_007", "DarkKnight", "Mochi_Fan", "Admin_Ayu", "GamerX"];
-            const msgs = ["เพิ่งได้ Gen 3 ครับ!", "ใครมีโค้ดแจกบ้าง?", "มินิเกมรับดาวรวยเร็วสุด", "ไปทัวร์ญี่ปุ่นกันเถอะ", "สัตว์เลี้ยงหิวไวมาก"];
-            addChatMessage(`[${users[Math.floor(Math.random()*users.length)]}] ${msgs[Math.floor(Math.random()*msgs.length)]}`);
-        }
-
-        function addChatMessage(msg, isSystem = false) {
-            const chatBox = document.getElementById('chat-scroller');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'chat-msg';
-            if (isSystem) {
-                msgDiv.innerHTML = `<span class="chat-sys">${msg}</span>`;
-            } else {
-                const parts = msg.split(']');
-                msgDiv.innerHTML = `<span class="chat-user">${parts[0]}]</span>${parts[1]}`;
-            }
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-
-        function closeAllModals() {
-            document.querySelectorAll('.modal-overlay').forEach(m => {
-                if (m.id !== 'death-overlay') m.style.display = 'none';
-            });
-            // Stop timers if any
-            clearInterval(wordBattleTimer);
-            gameState.isGameActive = false;
-        }
-
-        function saveGame() {
-            localStorage.setItem('AYU_ARENA_DATA_2026', JSON.stringify(gameState));
-        }
-
-        window.onload = () => {
-            const savedData = localStorage.getItem('AYU_ARENA_DATA_2026');
-            if (savedData) {
-                gameState = JSON.parse(savedData);
-                if (gameState.isRegistered) {
-                    document.getElementById('screen-language').classList.add('hidden');
-                    document.getElementById('screen-hub').classList.remove('hidden');
-                    initializeLanguage(gameState.language);
-                    startCoreEngine();
-                }
-            }
-        };
-
-        // Keyboard Support for Word Battle
-        document.getElementById('input-word-battle').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') processWordSubmission();
+        const qrcode = new QRCode(qrContainer, {
+            text: "Welcome",
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
         });
+
+        function generateQR() {
+            const data = qrInput.value;
+            if (data.trim() === "") {
+                qrcode.clear();
+                qrcode.makeCode("Welcome");
+            } else {
+                qrcode.makeCode(data);
+            }
+        }
     </script>
 </body>
 </html>
+
