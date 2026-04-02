@@ -3,127 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury QR Generator | Trial Version</title>
+    <title>Luxury QR & Image Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Prompt:wght@200;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&family=Prompt:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #d4af37;
-            --dark: #121212;
-            --glass: rgba(255, 255, 255, 0.05);
-        }
-
+        :root { --gold: #D4AF37; --dark-bg: #0f0f0f; }
         body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: radial-gradient(circle at center, #1e1e1e 0%, #000 100%);
-            font-family: 'Prompt', sans-serif;
-            color: #fff;
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            font-family: 'Prompt', sans-serif; color: white; text-align: center;
         }
-
-        .container {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3rem;
-            border-radius: 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            transition: transform 0.3s ease;
+        .card {
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px;
+            border-radius: 30px; max-width: 400px; width: 90%;
         }
-
-        h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 300;
-            letter-spacing: 4px;
-            color: var(--gold);
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-        }
-
-        .input-group {
-            margin-bottom: 2rem;
-        }
-
         input {
-            width: 100%;
-            padding: 12px 0;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--gold);
-            color: #fff;
-            font-size: 1.1rem;
-            text-align: center;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; padding: 12px 0; background: transparent; border: none;
+            border-bottom: 1px solid var(--gold); color: #fff; font-size: 1.2rem;
+            text-align: center; outline: none; margin-bottom: 20px;
         }
-
-        input:focus {
-            border-bottom: 2px solid #fff;
-            letter-spacing: 1px;
-        }
-
         #qrcode {
-            background: #fff;
-            padding: 15px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-top: 20px;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            background: #fff; padding: 15px; border-radius: 15px;
+            display: inline-block; margin-bottom: 20px;
         }
-
-        .status-text {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 1.5rem;
-            font-weight: 200;
+        .btn-download {
+            background: linear-gradient(45deg, #D4AF37, #f2d06b);
+            color: #000; border: none; padding: 12px 25px;
+            border-radius: 50px; font-weight: 600; cursor: pointer;
+            transition: 0.3s; width: 100%; text-decoration: none; display: block;
         }
-
-        canvas {
-            max-width: 100%;
-        }
+        .btn-download:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        #view-section { display: none; }
+        .result-img { width: 100%; border-radius: 15px; margin-top: 15px; border: 2px solid var(--gold); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>QR LUXE</h1>
-        <div class="input-group">
-            <input type="text" id="text" placeholder="พิมพ์ข้อความที่นี่..." oninput="generateQR()">
-        </div>
-        
+    <div id="create-section" class="card">
+        <h1 style="color: var(--gold); font-family: Montserrat; letter-spacing: 3px;">QR GENERATOR</h1>
+        <input type="text" id="qr-input" placeholder="พิมพ์ข้อความ (เช่น โคนัน)..." oninput="updateQR()">
         <div id="qrcode"></div>
-        
-        <p class="status-text">พิมพ์ "โคนัน" หรือข้อความที่คุณต้องการด้านบนได้เลย</p>
+        <button class="btn-download" onclick="downloadQR()">DOWNLOAD QR CODE</button>
+    </div>
+
+    <div id="view-section" class="card">
+        <h1 id="display-text" style="color: var(--gold);"></h1>
+        <p>สแกนสำเร็จ! นี่คือข้อความของคุณ</p>
+        <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=500" class="result-img">
+        <p id="sub-text" style="margin-top:10px; font-weight: bold; font-size: 1.5rem;"></p>
     </div>
 
     <script>
-        const qrContainer = document.getElementById("qrcode");
-        const qrInput = document.getElementById("text");
+        const urlParams = new URLSearchParams(window.location.search);
+        const textParam = urlParams.get('text');
 
-        const qrcode = new QRCode(qrContainer, {
-            text: "Welcome",
-            width: 200,
-            height: 200,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
+        // ตรวจสอบว่าเป็นการ "สแกนมา" หรือ "กำลังสร้าง"
+        if (textParam) {
+            document.getElementById('create-section').style.display = 'none';
+            document.getElementById('view-section').style.display = 'block';
+            document.getElementById('display-text').innerText = "RESULT";
+            document.getElementById('sub-text').innerText = textParam;
+        }
+
+        const qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href,
+            width: 200, height: 200,
+            colorDark : "#000000", colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
         });
 
-        function generateQR() {
-            const data = qrInput.value;
-            if (data.trim() === "") {
-                qrcode.clear();
-                qrcode.makeCode("Welcome");
-            } else {
-                qrcode.makeCode(data);
-            }
+        function updateQR() {
+            const val = document.getElementById("qr-input").value;
+            // สร้าง Link ที่จะให้คนสแกนแล้ววิ่งมาหน้าเดิมแต่พ่วง Parameter ไปด้วย
+            const currentUrl = window.location.href.split('?')[0];
+            const finalUrl = currentUrl + "?text=" + encodeURIComponent(val);
+            qrcode.makeCode(finalUrl);
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            const link = document.createElement('a');
+            link.download = 'my-luxury-qr.png';
+            link.href = canvas.toDataURL();
+            link.click();
         }
     </script>
 </body>
