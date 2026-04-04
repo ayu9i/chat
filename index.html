@@ -9,6 +9,7 @@
         :root { 
             --hacker-green: #00FF41; 
             --bg-black: #000;
+            --system-blue: #00ccff;
         }
         
         body, html {
@@ -19,22 +20,31 @@
             font-family: 'Courier Prime', monospace;
         }
 
-        /* --- [NEW] ระบบ Blackout Layer (ใช้ตอนจอดับ) --- */
         #blackout {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: none;
         }
 
-        /* --- [NEW] จำลองหน้าเว็บแชทเดิม (ใช้ตอนแวบขึ้นมา) --- */
+        /* --- เลเยอร์กู้ข้อมูลสำเร็จ (หลอกให้ดีใจ) --- */
         #mockupChat {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #111; z-index: 5000; display: none;
             justify-content: center; align-items: center;
+            flex-direction: column;
         }
         .chat-box-mock {
-            width: 400px; height: 600px; border: 2px solid #d4af37;
-            border-radius: 20px; background: #000;
+            width: 350px; height: 500px; border: 2px solid #d4af37;
+            border-radius: 20px; background: #000; position: relative;
         }
+        .recovery-success {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0, 204, 255, 0.9); color: white;
+            padding: 15px 30px; border-radius: 10px; font-weight: bold;
+            box-shadow: 0 0 20px var(--system-blue);
+            z-index: 5001; text-align: center; font-family: 'Kanit';
+            animation: pulse 0.5s infinite alternate;
+        }
+        @keyframes pulse { from { opacity: 0.7; } to { opacity: 1; } }
 
         #matrixCanvas { position: fixed; top: 0; left: 0; z-index: 1; }
 
@@ -44,6 +54,13 @@
             border: 2px solid var(--hacker-green);
             box-shadow: 0 0 20px var(--hacker-green);
             max-width: 90%; animation: flicker 0.1s infinite;
+        }
+
+        /* ข้อความสีแดงตอนโดนแฮ็กซ้ำ */
+        #overrideMsg {
+            color: #ff0000; font-weight: bold; display: none;
+            position: fixed; top: 20px; z-index: 10000; font-size: 1.2rem;
+            text-shadow: 0 0 10px red;
         }
 
         .status-msg {
@@ -57,9 +74,7 @@
             border-top: 1px solid #ff0000; padding-top: 10px;
         }
 
-        @keyframes flicker {
-            0% { opacity: 0.9; } 50% { opacity: 1; } 100% { opacity: 0.9; }
-        }
+        @keyframes flicker { 0% { opacity: 0.9; } 50% { opacity: 1; } 100% { opacity: 0.9; } }
 
         #loginOverlay, #chatWindow, #customAlert { display: none !important; }
     </style>
@@ -67,14 +82,15 @@
 <body>
 
     <div id="blackout"></div>
+    <div id="overrideMsg">! CRITICAL: OVERRIDDEN BY EXTERNAL SOURCE !</div>
 
     <div id="mockupChat">
-        <div class="chat-box-mock" style="display:flex; flex-direction:column;">
-            <div style="background:#d4af37; height:50px; border-radius:18px 18px 0 0;"></div>
-            <div style="flex:1; padding:20px;">
-                <div style="background:#222; width:70%; height:30px; border-radius:10px; margin-bottom:10px;"></div>
-                <div style="background:#d4af37; width:60%; height:30px; border-radius:10px; align-self:flex-end;"></div>
-            </div>
+        <div class="recovery-success">
+            กู้คืนข้อมูลสำเร็จ 100%<br>
+            <span style="font-size: 0.7rem;">SYSTEM RECOVERED</span>
+        </div>
+        <div class="chat-box-mock">
+            <div style="background:#d4af37; height:40px; border-radius:18px 18px 0 0;"></div>
         </div>
     </div>
 
@@ -96,6 +112,7 @@
         const blackout = document.getElementById('blackout');
         const mockup = document.getElementById('mockupChat');
         const hackerUI = document.getElementById('hackerUI');
+        const overrideMsg = document.getElementById('overrideMsg');
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -120,38 +137,41 @@
         }
         setInterval(drawMatrix, 33);
 
-        // --- [NEW] ระบบ Loop จอดับ และกู้คืนแวบหนึ่ง ---
         function triggerGlitchLoop() {
-            // 1. จอดับ (Blackout)
+            // 1. เริ่มอาการจอดับ
             setTimeout(() => {
                 blackout.style.display = 'block';
                 
-                // 2. จอติดขึ้นมาเห็นหน้าเว็บแชทแวบหนึ่ง (0.3 วินาที)
+                // 2. จอติดขึ้นมาพร้อมสถานะ "กู้ข้อมูลสำเร็จ" (แวบขึ้นมา 0.8 วินาที)
                 setTimeout(() => {
                     blackout.style.display = 'none';
                     mockup.style.display = 'flex';
                     hackerUI.style.display = 'none';
                     canvas.style.opacity = '0';
 
-                    // 3. โดนแฮ็กซ้ำ (กลับมาเป็นหน้า Matrix เหมือนเดิม)
+                    // 3. แวบหนึ่งขึ้นคำเตือนสีแดงว่าโดน Override
                     setTimeout(() => {
-                        mockup.style.display = 'none';
-                        hackerUI.style.display = 'block';
-                        canvas.style.opacity = '1';
+                        overrideMsg.style.display = 'block';
                         
-                        // รัน Loop ต่อไปทุกๆ 5-10 วินาที
-                        setTimeout(triggerGlitchLoop, Math.random() * 5000 + 5000);
-                    }, 300); 
+                        // 4. กลับสู่สถานะโดนแฮ็กเหมือนเดิม
+                        setTimeout(() => {
+                            overrideMsg.style.display = 'none';
+                            mockup.style.display = 'none';
+                            hackerUI.style.display = 'block';
+                            canvas.style.opacity = '1';
+                            
+                            // วนลูปสุ่มเวลา 7-12 วินาที
+                            setTimeout(triggerGlitchLoop, Math.random() * 5000 + 7000);
+                        }, 400); // แสดงหน้ากู้ข้อมูลแค่แป๊บเดียว
 
-                }, 1000); // ดับไป 1 วินาที
+                    }, 800); // ให้ดีใจ 0.8 วินาทีก่อนขึ้นสีแดง
 
-            }, 5000); // เริ่มอาการหลังผ่านไป 5 วินาที
+                }, 1200); // ดับไป 1.2 วินาที
+
+            }, 6000); // เริ่มหลังเปิดหน้าเว็บ 6 วินาที
         }
 
-        window.onload = () => {
-            triggerGlitchLoop();
-        };
-
+        window.onload = triggerGlitchLoop;
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
