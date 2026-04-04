@@ -3,115 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury QR & Image Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&family=Prompt:wght@300;500&display=swap" rel="stylesheet">
+    <title>Conan Assistant | ระบบถาม-ตอบ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --dark-bg: #0f0f0f; }
-        body {
-            margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            font-family: 'Prompt', sans-serif; color: white; text-align: center;
+        :root { 
+            --conan-gold: #d4af37; 
+            --bg-dark: #0a0a0a;
+            --panel-bg: #111;
+        }
+        body { 
+            margin: 0; 
+            font-family: 'Kanit', sans-serif; 
+            background: #000; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
         }
 
-        /* ส่วนประกาศสำคัญที่เพิ่มเข้ามา */
-        .announcement {
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold);
-            padding: 15px 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            max-width: 380px;
-            width: 85%;
-            backdrop-filter: blur(10px);
-            animation: fadeInDown 1s ease-out;
-        }
-        .announcement b { color: var(--gold); font-size: 1.1rem; }
-        .announcement p { margin: 5px 0 0; font-size: 0.85rem; font-weight: 300; color: #ccc; }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* --- Chat Window Container --- */
+        #chatWindow { 
+            width: 100%; 
+            max-width: 400px; 
+            height: 600px; 
+            background: var(--panel-bg); 
+            border: 2px solid var(--conan-gold); 
+            border-radius: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px;
-            border-radius: 30px; max-width: 400px; width: 90%;
+        .chat-header { 
+            background: var(--conan-gold); 
+            color: #000; 
+            padding: 15px; 
+            font-weight: 600; 
+            text-align: center; 
+            font-size: 1.1rem;
         }
-        input {
-            width: 100%; padding: 12px 0; background: transparent; border: none;
-            border-bottom: 1px solid var(--gold); color: #fff; font-size: 1.2rem;
-            text-align: center; outline: none; margin-bottom: 20px;
+
+        .chat-body { 
+            flex: 1; 
+            padding: 15px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            background: var(--bg-dark); 
+            scroll-behavior: smooth; 
         }
-        #qrcode {
-            background: #fff; padding: 15px; border-radius: 15px;
-            display: inline-block; margin-bottom: 20px;
+
+        /* --- Message Bubbles --- */
+        .msg { 
+            padding: 10px 14px; 
+            border-radius: 15px; 
+            max-width: 85%; 
+            line-height: 1.5; 
+            font-size: 0.9rem;
+            word-wrap: break-word;
         }
-        .btn-download {
-            background: linear-gradient(45deg, #D4AF37, #f2d06b);
-            color: #000; border: none; padding: 12px 25px;
-            border-radius: 50px; font-weight: 600; cursor: pointer;
-            transition: 0.3s; width: 100%; text-decoration: none; display: block;
+        .bot { 
+            background: #222; 
+            color: #eee;
+            align-self: flex-start; 
+            border-bottom-left-radius: 2px;
+            border: 1px solid #333; 
         }
-        .btn-download:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
-        #view-section { display: none; }
-        .result-img { width: 100%; border-radius: 15px; margin-top: 15px; border: 2px solid var(--gold); }
+        .user { 
+            background: var(--conan-gold); 
+            color: #000; 
+            align-self: flex-end; 
+            border-bottom-right-radius: 2px;
+            font-weight: 500;
+        }
+
+        /* --- Rich Menu System --- */
+        .rich-menu-container { 
+            background: #111; 
+            border-top: 2px solid var(--conan-gold); 
+        }
+
+        .menu-tabs { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+        }
+
+        .tab { 
+            padding: 12px; 
+            text-align: center; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            color: #888; 
+            background: #1a1a1a; 
+            transition: 0.3s;
+        }
+        .tab.active { 
+            background: var(--conan-gold); 
+            color: black; 
+        }
+
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 6px; 
+            padding: 10px; 
+            background: #151515; 
+            max-height: 180px; 
+            overflow-y: auto; 
+        }
+
+        .menu-item { 
+            background: #252525; 
+            color: #ddd;
+            padding: 10px 4px; 
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: 0.75rem; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            border: 1px solid #333; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .menu-item:hover { 
+            background: var(--conan-gold); 
+            color: black; 
+            border-color: var(--conan-gold);
+        }
+
+        /* Scrollbar Style */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="announcement">
-        <b>✨ ประกาศสำคัญ ✨</b>
-        <p>เว็บนี้เปิดให้ทดลองใช้ชั่วคราว เพื่อรอพบกับเว็บเวอร์ชั่นใหม่ที่จะเปิดตัวเร็วๆ นี้ โปรดใช้ฟังก์ชันนี้ไปก่อนนะคะ ขอบคุณค่ะ</p>
+<div id="chatWindow">
+    <div class="chat-header">ผู้ช่วยนักสืบโคนัน</div>
+    <div class="chat-body" id="chatBody">
+        <div class="msg bot">สวัสดีค่ะ! มีเรื่องไหนในโคนันที่อยากรู้เป็นพิเศษไหมคะ? ลองเลือกหัวข้อด้านล่างได้เลย!</div>
     </div>
 
-    <div id="create-section" class="card">
-        <h1 style="color: var(--gold); font-family: Montserrat; letter-spacing: 3px;">QR GENERATOR</h1>
-        <input type="text" id="qr-input" placeholder="พิมพ์ข้อความ (เช่น โคนัน)..." oninput="updateQR()">
-        <div id="qrcode"></div>
-        <button class="btn-download" onclick="downloadQR()">DOWNLOAD QR CODE</button>
+    <div class="rich-menu-container">
+        <div class="menu-tabs">
+            <div class="tab active" id="tabMain" onclick="switchTab('main')">ข้อมูลทั่วไป</div>
+            <div class="tab" id="tabPromo" onclick="switchTab('promo')">คำถามยอดฮิต</div>
+        </div>
+        
+        <div id="gridMain" class="menu-grid">
+            <div class="menu-item" onclick="botReply('ตอนแนะนำ')">ตอนแนะนำ</div>
+            <div class="menu-item" onclick="botReply('มูฟวี่ล่าสุด')">มูฟวี่ล่าสุด</div>
+            <div class="menu-item" onclick="botReply('ใครคือบอส')">ใครคือบอส</div>
+            <div class="menu-item" onclick="botReply('ชินอิจิรัน')">ชินอิจิรัน</div>
+            <div class="menu-item" onclick="botReply('ยาแก้พิษชั่วคราว')">ยาแก้พิษ</div>
+            <div class="menu-item" onclick="botReply('โคนันจบเมื่อไหร่')">เมื่อไหร่จบ?</div>
+        </div>
+
+        <div id="gridPromo" class="menu-grid" style="display:none;">
+            <div class="menu-item" onclick="botReply('รันรู้ความจริงยัง')">รันรู้ความจริง?</div>
+            <div class="menu-item" onclick="botReply('ไฮบาระชอบโคนัน?')">ไอจังชอบโคนัน?</div>
+            <div class="menu-item" onclick="botReply('เบอร์เบินคือใคร')">เบอร์เบินคือใคร?</div>
+            <div class="menu-item" onclick="botReply('รัมคือใคร')">เผยตัวจริง RUM</div>
+            <div class="menu-item" onclick="botReply('อากาอิขิตไหม')">อากาอิตายยัง?</div>
+            <div class="menu-item" onclick="botReply('ทำไมโคนันไม่โต')">ทำไมไม่โต?</div>
+        </div>
     </div>
+</div>
 
-    <div id="view-section" class="card">
-        <h1 id="display-text" style="color: var(--gold);"></h1>
-        <p>สแกนสำเร็จ! นี่คือข้อความของคุณ</p>
-        <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=500" class="result-img">
-        <p id="sub-text" style="margin-top:10px; font-weight: bold; font-size: 1.5rem;"></p>
-    </div>
+<script>
+    const responses = {
+        'ตอนแนะนำ': "ลองดู 'คดีฆาตกรรมเปียโนโซนาต้าแสงจันทร์' หรือ 'ทัศนศึกษาสีแดง' ดูสิคะ เป็นตอนที่แฟนโคนันห้ามพลาดเลย!",
+        'มูฟวี่ล่าสุด': "ภาคล่าสุดคือเดอะมูฟวี่ 28 ค่ะ! ส่วนภาค 27 'ปริศนาปราการห้าแฉก' ก็สนุกมาก มีทั้งฮัตโตริและจอมโจรคิดเลย",
+        'ใครคือบอส': "ความลับดำมืดขององค์กร! บอสคือ 'คาราสุมะ เร็นยะ' มหาเศรษฐีที่รวยที่สุดในญี่ปุ่นที่น่าจะตายไปนานแล้วค่ะ",
+        'ชินอิจิรัน': "คู่นี้เค้าเป็นแฟนกันอย่างเป็นทางการแล้วนะ! สารภาพรักกันที่ลอนดอน และตอบตกลงคบกันตอนไปทัศนศึกษาที่เกียวโตค่ะ",
+        'ยาแก้พิษชั่วคราว': "ยา APTX4869 รุ่นทดลองของไฮบาระ ช่วยให้กลับร่างเดิมได้ชั่วคราว แต่ถ้ากินบ่อยๆ ร่างกายจะมีภูมิต้านทานและออกฤทธิ์สั้นลงนะ",
+        'โคนันจบเมื่อไหร่': "อาจารย์โกโชบอกว่าวางพล็อตตอนจบไว้แล้วค่ะ แต่ยังไม่มีกำหนดฉายตอนจบเร็วๆ นี้แน่นอน สู้ต่อไปนะนักสืบ!",
+        'รันรู้ความจริงยัง': "รันสงสัยหลายรอบมากค่ะ! แต่ชินอิจิก็รอดมาได้ตลอด ปัจจุบันรันยังไม่รู้ความจริงแบบ 100% (แต่เซนส์ผู้หญิงน่ะน่ากลัวนะ!)",
+        'ไฮบาระชอบโคนัน?': "มีใจให้แน่นอนค่ะ แต่ไฮบาระเลือกที่จะเก็บไว้และคอยซัพพอร์ตโคนันในฐานะคู่หูที่ไว้ใจได้ที่สุดแทน",
+        'เบอร์เบินคือใคร': "เขาคือ 'อามุโร่ โทโอรุ' หรือชื่อจริงคือ 'ฟุรุยะ เรย์' เป็นตำรวจลับญี่ปุ่น (NPA) ที่แฝงตัวเข้าไปในองค์กรค่ะ",
+        'รัมคือใคร': "อันดับ 2 ขององค์กรชุดดำคือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบโมรินั่นเอง!",
+        'อากาอิขิตไหม': "ยังอยู่ดีค่ะ! ตอนนี้ปลอมตัวเป็น 'โอกิยะ สึบารุ' นักศึกษาปริญญาเอกที่อาศัยอยู่ในบ้านของชินอิจิค่ะ",
+        'ทำไมโคนันไม่โต': "ในเวลาของเนื้อเรื่องจริงๆ ผ่านไปไม่ถึงปีค่ะ (แม้โลกความจริงจะผ่านไป 30 ปีแล้วก็ตาม 555)"
+    };
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const textParam = urlParams.get('text');
+    function switchTab(type) {
+        document.getElementById('tabMain').classList.toggle('active', type === 'main');
+        document.getElementById('tabPromo').classList.toggle('active', type === 'promo');
+        document.getElementById('gridMain').style.display = type === 'main' ? 'grid' : 'none';
+        document.getElementById('gridPromo').style.display = type === 'promo' ? 'grid' : 'none';
+    }
 
-        if (textParam) {
-            document.getElementById('create-section').style.display = 'none';
-            document.getElementById('view-section').style.display = 'block';
-            document.getElementById('display-text').innerText = "RESULT";
-            document.getElementById('sub-text').innerText = textParam;
-        }
+    function botReply(cmd) {
+        const body = document.getElementById('chatBody');
+        
+        // User Message
+        body.innerHTML += `<div class="msg user">${cmd}</div>`;
+        body.scrollTop = body.scrollHeight;
 
-        const qrcode = new QRCode(document.getElementById("qrcode"), {
-            text: window.location.href,
-            width: 200, height: 200,
-            colorDark : "#000000", colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
+        // Bot Response
+        setTimeout(() => {
+            const reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ?";
+            body.innerHTML += `<div class="msg bot">${reply}</div>`;
+            body.scrollTop = body.scrollHeight;
+        }, 500);
+    }
+</script>
 
-        function updateQR() {
-            const val = document.getElementById("qr-input").value;
-            const currentUrl = window.location.href.split('?')[0];
-            const finalUrl = currentUrl + "?text=" + encodeURIComponent(val);
-            qrcode.makeCode(finalUrl);
-        }
-
-        function downloadQR() {
-            const canvas = document.querySelector('#qrcode canvas');
-            const link = document.createElement('a');
-            link.download = 'my-luxury-qr.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        }
-    </script>
 </body>
 </html>
