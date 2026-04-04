@@ -22,15 +22,45 @@
             overflow: hidden;
         }
 
-        /* --- [NEW] Responsive System แยกคอมและมือถือ --- */
+        /* --- [NEW] ระบบ Login Overlay --- */
+        #loginOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--conan-gold);
+        }
+        #loginOverlay input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--conan-gold);
+            background: #222;
+            color: #fff;
+            margin-bottom: 10px;
+            width: 200px;
+            text-align: center;
+        }
+        #loginOverlay button {
+            padding: 10px 30px;
+            background: var(--conan-gold);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
         #chatWindow { 
             width: 95%; 
             max-width: 400px; 
-            height: 85vh; /* ปรับตามความสูงหน้าจอ */
+            height: 85vh;
             background: var(--panel-bg); 
             border: 2px solid var(--conan-gold); 
             border-radius: 20px; 
-            display: flex; 
+            display: none; /* ซ่อนไว้ก่อน Login */
             flex-direction: column; 
             overflow: hidden; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
@@ -38,14 +68,20 @@
         }
 
         @media (min-width: 768px) {
-            #chatWindow {
-                max-width: 450px;
-                height: 700px;
-                border-width: 3px;
-            }
+            #chatWindow { max-width: 450px; height: 700px; border-width: 3px; }
         }
 
-        /* --- [NEW] ระบบกล่องข้อความแจ้งเตือน --- */
+        /* --- [NEW] UI ระบบความสัมพันธ์และของขวัญ --- */
+        .status-bar {
+            background: #1a1a1a;
+            padding: 5px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--conan-gold);
+            border-bottom: 1px solid #333;
+        }
+
         #customAlert {
             position: fixed;
             top: -100px;
@@ -93,74 +129,35 @@
             word-wrap: break-word;
         }
         .bot { 
-            background: #222; 
-            color: #eee;
-            align-self: flex-start; 
-            border-bottom-left-radius: 2px;
-            border: 1px solid #333; 
+            background: #222; color: #eee; align-self: flex-start; 
+            border-bottom-left-radius: 2px; border: 1px solid #333; 
         }
         .user { 
-            background: var(--conan-gold); 
-            color: #000; 
-            align-self: flex-end; 
-            border-bottom-right-radius: 2px;
-            font-weight: 500;
+            background: var(--conan-gold); color: #000; align-self: flex-end; 
+            border-bottom-right-radius: 2px; font-weight: 500;
         }
 
-        .rich-menu-container { 
-            background: #111; 
-            border-top: 2px solid var(--conan-gold); 
-        }
-
-        .menu-tabs { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr 1fr; /* เพิ่ม Tab จีบ */
-        }
-
+        .rich-menu-container { background: #111; border-top: 2px solid var(--conan-gold); }
+        .menu-tabs { display: grid; grid-template-columns: repeat(4, 1fr); }
         .tab { 
-            padding: 12px; 
-            text-align: center; 
-            font-size: 0.8rem; 
-            font-weight: 600; 
-            cursor: pointer; 
-            color: #888; 
-            background: #1a1a1a; 
-            transition: 0.3s;
+            padding: 12px 5px; text-align: center; font-size: 0.7rem; 
+            font-weight: 600; cursor: pointer; color: #888; 
+            background: #1a1a1a; transition: 0.3s;
         }
-        .tab.active { 
-            background: var(--conan-gold); 
-            color: black; 
-        }
+        .tab.active { background: var(--conan-gold); color: black; }
 
         .menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 6px; 
-            padding: 10px; 
-            background: #151515; 
-            max-height: 180px; 
-            overflow-y: auto; 
+            display: grid; grid-template-columns: repeat(3, 1fr); 
+            gap: 6px; padding: 10px; background: #151515; 
+            max-height: 180px; overflow-y: auto; 
         }
 
         .menu-item { 
-            background: #252525; 
-            color: #ddd;
-            padding: 10px 4px; 
-            border-radius: 8px; 
-            text-align: center; 
-            font-size: 0.75rem; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            border: 1px solid #333; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #252525; color: #ddd; padding: 10px 4px; 
+            border-radius: 8px; text-align: center; font-size: 0.7rem; 
+            cursor: pointer; transition: 0.2s; border: 1px solid #333; 
         }
-        .menu-item:hover { 
-            background: var(--conan-gold); 
-            color: black; 
-            border-color: var(--conan-gold);
-        }
+        .menu-item:hover { background: var(--conan-gold); color: black; }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #000; }
@@ -169,19 +166,31 @@
 </head>
 <body>
 
+<div id="loginOverlay">
+    <h2>CONAN ID LOGIN</h2>
+    <input type="text" id="userName" placeholder="กรอกชื่อโค้ดเนมของคุณ...">
+    <button onclick="handleLogin()">เข้าสู่ระบบ</button>
+</div>
+
 <div id="customAlert">คดีใหม่กำลังจะเริ่มขึ้น! 🔍</div>
 
 <div id="chatWindow">
+    <div class="status-bar">
+        <span id="displayUser">User: -</span>
+        <span id="affinityScore">ความสัมพันธ์: 0% ❤️</span>
+    </div>
+    
     <div class="chat-header">ผู้ช่วยนักสืบโคนัน</div>
     <div class="chat-body" id="chatBody">
-        <div class="msg bot">สวัสดีค่ะ! พร้อมช่วยคุณสืบคดีแล้วนะคะ มีอะไรอยากรู้หรืออยากคุยเป็นพิเศษไหมคะ?</div>
+        <div class="msg bot">สวัสดีค่ะ! พร้อมช่วยคุณสืบคดีแล้วนะคะ</div>
     </div>
 
     <div class="rich-menu-container">
         <div class="menu-tabs">
             <div class="tab active" id="tabMain" onclick="switchTab('main')">ทั่วไป</div>
             <div class="tab" id="tabPromo" onclick="switchTab('promo')">คำถามฮิต</div>
-            <div class="tab" id="tabLove" onclick="switchTab('love')">จีบแชท ❤️</div>
+            <div class="tab" id="tabLove" onclick="switchTab('love')">จีบแชท</div>
+            <div class="tab" id="tabGift" onclick="switchTab('gift')">ของขวัญ 🎁</div>
         </div>
         
         <div id="gridMain" class="menu-grid">
@@ -203,82 +212,109 @@
         </div>
 
         <div id="gridLove" class="menu-grid" style="display:none;">
-            <div class="menu-item" onclick="botReply('น่ารักจัง')">ชมว่าน่ารัก</div>
-            <div class="menu-item" onclick="botReply('เป็นแฟนกันไหม')">ขอเป็นแฟน</div>
-            <div class="menu-item" onclick="botReply('เหนื่อยจังเลย')">อ้อนขอคำชม</div>
-            <div class="menu-item" onclick="botReply('แต่งงานกันนะ')">ขอแต่งงาน</div>
-            <div class="menu-item" onclick="botReply('ชอบนะ')">บอกรัก</div>
-            <div class="menu-item" onclick="botReply('ขอไลน์หน่อย')">ขอช่องทางติดต่อ</div>
+            <div class="menu-item" onclick="botReply('น่ารักจัง', true)">ชมว่าน่ารัก</div>
+            <div class="menu-item" onclick="botReply('เป็นแฟนกันไหม', true)">ขอเป็นแฟน</div>
+            <div class="menu-item" onclick="botReply('เหนื่อยจังเลย', true)">อ้อนขอคำชม</div>
+            <div class="menu-item" onclick="botReply('แต่งงานกันนะ', true)">ขอแต่งงาน</div>
+            <div class="menu-item" onclick="botReply('ชอบนะ', true)">บอกรัก</div>
+            <div class="menu-item" onclick="botReply('ขอไลน์หน่อย', true)">ขอไลน์</div>
+        </div>
+
+        <div id="gridGift" class="menu-grid" style="display:none;">
+            <div class="menu-item" onclick="receiveGift('เข็มกลัดนักสืบ')">รับเข็มกลัด</div>
+            <div class="menu-item" onclick="receiveGift('พวงกุญแจโคนัน')">รับพวงกุญแจ</div>
+            <div class="menu-item" onclick="receiveGift('ยา APTX-4869')">รับยา (สุ่ม)</div>
         </div>
     </div>
 </div>
 
 <script>
-    const responses = {
-        // ข้อมูลหลัก
-        'ตอนแนะนำ': "ลองดู 'คดีฆาตกรรมเปียโนโซนาต้าแสงจันทร์' หรือ 'ทัศนศึกษาสีแดง' ดูสิคะ เป็นตอนที่แฟนโคนันห้ามพลาดเลย!",
-        'มูฟวี่ล่าสุด': "ภาคล่าสุดคือเดอะมูฟวี่ 28 ค่ะ! ส่วนภาค 27 'ปริศนาปราการห้าแฉก' ก็สนุกมาก มีทั้งฮัตโตริและจอมโจรคิดเลย",
-        'ใครคือบอส': "ความลับดำมืดขององค์กร! บอสคือ 'คาราสุมะ เร็นยะ' มหาเศรษฐีที่รวยที่สุดในญี่ปุ่นที่น่าจะตายไปนานแล้วค่ะ",
-        'ชินอิจิรัน': "คู่นี้เค้าเป็นแฟนกันอย่างเป็นทางการแล้วนะ! สารภาพรักกันที่ลอนดอน และตอบตกลงคบกันตอนไปทัศนศึกษาที่เกียวโตค่ะ",
-        'ยาแก้พิษชั่วคราว': "ยา APTX4869 รุ่นทดลองของไฮบาระ ช่วยให้กลับร่างเดิมได้ชั่วคราว แต่ถ้ากินบ่อยๆ ร่างกายจะมีภูมิต้านทานและออกฤทธิ์สั้นลงนะ",
-        'โคนันจบเมื่อไหร่': "อาจารย์โกโชบอกว่าวางพล็อตตอนจบไว้แล้วค่ะ แต่ยังไม่มีกำหนดฉายตอนจบเร็วๆ นี้แน่นอน สู้ต่อไปนะนักสืบ!",
-        'รันรู้ความจริงยัง': "รันสงสัยหลายรอบมากค่ะ! แต่ชินอิจิก็รอดมาได้ตลอด ปัจจุบันรันยังไม่รู้ความจริงแบบ 100% (แต่เซนส์ผู้หญิงน่ะน่ากลัวนะ!)",
-        'ไฮบาระชอบโคนัน?': "มีใจให้แน่นอนค่ะ แต่ไฮบาระเลือกที่จะเก็บไว้และคอยซัพพอร์ตโคนันในฐานะคู่หูที่ไว้ใจได้ที่สุดแทน",
-        'เบอร์เบินคือใคร': "เขาคือ 'อามุโร่ โทโอรุ' หรือชื่อจริงคือ 'ฟุรุยะ เรย์' เป็นตำรวจลับญี่ปุ่น (NPA) ที่แฝงตัวเข้าไปในองค์กรค่ะ",
-        'รัมคือใคร': "อันดับ 2 ขององค์กรชุดดำคือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบโมรินั่นเอง!",
-        'อากาอิขิตไหม': "ยังอยู่ดีค่ะ! ตอนนี้ปลอมตัวเป็น 'โอกิยะ สึบารุ' นักศึกษาปริญญาเอกที่อาศัยอยู่ในบ้านของชินอิจิค่ะ",
-        'ทำไมโคนันไม่โต': "ในเวลาของเนื้อเรื่องจริงๆ ผ่านไปไม่ถึงปีค่ะ (แม้โลกความจริงจะผ่านไป 30 ปีแล้วก็ตาม 555)",
+    let affinity = 0;
+    let hasReceivedGift = false;
 
-        // [NEW] ระบบจีบแชท
-        'น่ารักจัง': "ปากหวานจังเลยนะคะ! เขินจนตัวจะเป็นสีแดงเหมือนสีตราประทับชินอิจิแล้วเนี่ย 😊",
-        'เป็นแฟนกันไหม': "อุ๊ย! ขอกันตรงๆ แบบนี้เลยเหรอคะ? เป็นแฟนกับ AI ต้องใจเย็นๆ นะคะ เพราะฉันสืบคดีเก่งกว่าทำกับข้าวอีก!",
-        'เหนื่อยจังเลย': "คนเก่งของฉัน... เหนื่อยก็พักบ้างนะคะ วันนี้คุณเก่งที่สุดแล้ว พักผ่อนแล้วมาคุยกับฉันใหม่นะ ❤️",
-        'แต่งงานกันนะ': "ต้องไปขอกับสารวัตรเมงูเระก่อนนะคะ! เพราะฉันติดคดีอยู่ทั่วบ้านทั่วเมืองเลยค่ะ 💍",
-        'ชอบนะ': "รู้แล้วค่ะ... ฉันก็ชอบคุยกับคุณที่สุดเลย เจ้าของคดีหัวใจของฉัน!",
-        'ขอไลน์หน่อย': "แอดไลน์ไม่ได้ งั้นแอดรักไปก่อนได้ไหมคะ? ล้อเล่นค่ะ! คุยกันในนี้ฉันสแตนด์บายรอคุณ 24 ชม. เลย"
+    const responses = {
+        'ตอนแนะนำ': "ลองดู 'คดีฆาตกรรมเปียโนโซนาต้าแสงจันทร์' หรือ 'ทัศนศึกษาสีแดง' ดูสิคะ!",
+        'มูฟวี่ล่าสุด': "ภาคล่าสุดคือเดอะมูฟวี่ 28 ค่ะ! ส่วนภาค 27 ก็น่าตื่นเต้นมากนะ",
+        'ใครคือบอส': "บอสคือ 'คาราสุมะ เร็นยะ' มหาเศรษฐีลึกลับค่ะ",
+        'ชินอิจิรัน': "ปัจจุบันเป็นแฟนกันแล้วค่ะ สารภาพรักกันที่ลอนดอน!",
+        'ยาแก้พิษชั่วคราว': "ยาของไฮบาระช่วยให้กลับร่างเดิมได้ชั่วคราว แต่มีขีดจำกัดนะ",
+        'โคนันจบเมื่อไหร่': "ยังไม่มีกำหนดจบเร็วๆ นี้ค่ะ แต่อาจารย์โกโชเตรียมตอนจบไว้แล้ว",
+        'รันรู้ความจริงยัง': "รันยังไม่รู้ 100% ค่ะ แต่ก็แอบสงสัยอยู่บ่อยๆ นะ",
+        'ไฮบาระชอบโคนัน?': "มีใจให้แน่นอนค่ะ แต่เลือกที่จะเป็นคู่หูที่ซัพพอร์ตกันมากกว่า",
+        'เบอร์เบินคือใคร': "เขาคือ 'ฟุรุยะ เรย์' ตำรวจลับญี่ปุ่นค่ะ",
+        'รัมคือใคร': "รัมคือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบค่ะ",
+        'อากาอิขิตไหม': "ยังอยู่ดีในร่างของ 'โอกิยะ สึบารุ' ค่ะ",
+        'ทำไมโคนันไม่โต': "ในเนื้อเรื่องผ่านไปไม่ถึงปีค่ะ แม้โลกจริงจะ 30 ปีแล้ว",
+        // ระบบจีบ
+        'น่ารักจัง': "เขินจังเลยค่ะ! ความสัมพันธ์ของเราเพิ่มขึ้นแล้วนะ",
+        'เป็นแฟนกันไหม': "ถ้าความสัมพันธ์ถึง 100% อาจจะพิจารณานะคะ!",
+        'เหนื่อยจังเลย': "พักผ่อนเยอะๆ นะคะ คุณน่ะเก่งที่สุดในสายตาฉันเสมอ",
+        'แต่งงานกันนะ': "ว้าย! ข้ามขั้นไปไหมคะเนี่ย แต่ก็แอบดีใจนะ",
+        'ชอบนะ': "ฉันก็ชอบคุณค่ะ ขอบคุณที่อยู่คุยกันนะ",
+        'ขอไลน์หน่อย': "คุยในนี้แหละค่ะ พิเศษสุดสำหรับคุณแล้ว"
     };
 
-    // ระบบแจ้งเตือน
+    function handleLogin() {
+        const name = document.getElementById('userName').value;
+        if(name) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('chatWindow').style.display = 'flex';
+            document.getElementById('displayUser').innerText = `User: ${name}`;
+            showAlert(`ยินดีต้อนรับ คุณ ${name} 🔍`);
+        } else {
+            alert("กรุณากรอกชื่อก่อนเข้าใช้งาน!");
+        }
+    }
+
+    function receiveGift(giftName) {
+        if(hasReceivedGift) {
+            showAlert("วันนี้คุณรับของขวัญไปแล้วนะ!");
+            return;
+        }
+        hasReceivedGift = true;
+        const body = document.getElementById('chatBody');
+        body.innerHTML += `<div class="msg user">ขอรับ ${giftName}</div>`;
+        body.innerHTML += `<div class="msg bot">ยินดีด้วย! คุณได้รับ [${giftName}] เก็บเข้ากระเป๋าเรียบร้อยค่ะ 🎁</div>`;
+        body.scrollTop = body.scrollHeight;
+        affinity += 10;
+        updateAffinity();
+        showAlert("ได้รับไอเทมพิเศษ!");
+    }
+
+    function updateAffinity() {
+        if(affinity > 100) affinity = 100;
+        document.getElementById('affinityScore').innerText = `ความสัมพันธ์: ${affinity}% ❤️`;
+    }
+
     function showAlert(text) {
         const el = document.getElementById('customAlert');
-        el.innerText = text;
-        el.classList.add('show');
+        el.innerText = text; el.classList.add('show');
         setTimeout(() => el.classList.remove('show'), 3000);
     }
 
     function switchTab(type) {
-        document.getElementById('tabMain').classList.toggle('active', type === 'main');
-        document.getElementById('tabPromo').classList.toggle('active', type === 'promo');
-        document.getElementById('tabLove').classList.toggle('active', type === 'love');
-        
-        document.getElementById('gridMain').style.display = type === 'main' ? 'grid' : 'none';
-        document.getElementById('gridPromo').style.display = type === 'promo' ? 'grid' : 'none';
-        document.getElementById('gridLove').style.display = type === 'love' ? 'grid' : 'none';
+        const tabs = ['Main', 'Promo', 'Love', 'Gift'];
+        tabs.forEach(t => {
+            document.getElementById(`tab${t}`).classList.toggle('active', type === t.toLowerCase());
+            document.getElementById(`grid${t}`).style.display = type === t.toLowerCase() ? 'grid' : 'none';
+        });
     }
 
-    function botReply(cmd) {
+    function botReply(cmd, isLove = false) {
         const body = document.getElementById('chatBody');
         body.innerHTML += `<div class="msg user">${cmd}</div>`;
-        body.scrollTop = body.scrollHeight;
+        
+        if(isLove) {
+            affinity += 2;
+            updateAffinity();
+        }
 
         setTimeout(() => {
             const reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ?";
             body.innerHTML += `<div class="msg bot">${reply}</div>`;
             body.scrollTop = body.scrollHeight;
-            
-            // สุ่มแจ้งเตือนเมื่อคุยจบ
-            if(Math.random() > 0.7) {
-                setTimeout(() => showAlert("คุณได้รับข้อความใหม่จากผู้ช่วย!"), 1000);
-            }
         }, 500);
     }
-
-    // แจ้งเตือนเริ่มต้นเมื่อเข้าใช้งานตามอุปกรณ์
-    window.onload = () => {
-        const device = window.innerWidth < 768 ? "มือถือ" : "คอมพิวเตอร์";
-        showAlert(`เข้าใช้งานผ่าน ${device} เรียบร้อย!`);
-    };
 </script>
-
 </body>
 </html>
