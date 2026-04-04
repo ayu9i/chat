@@ -19,13 +19,14 @@
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
+            overflow: hidden;
         }
 
-        /* --- Chat Window Container --- */
+        /* --- [NEW] Responsive System แยกคอมและมือถือ --- */
         #chatWindow { 
-            width: 100%; 
+            width: 95%; 
             max-width: 400px; 
-            height: 600px; 
+            height: 85vh; /* ปรับตามความสูงหน้าจอ */
             background: var(--panel-bg); 
             border: 2px solid var(--conan-gold); 
             border-radius: 20px; 
@@ -33,7 +34,35 @@
             flex-direction: column; 
             overflow: hidden; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            position: relative;
         }
+
+        @media (min-width: 768px) {
+            #chatWindow {
+                max-width: 450px;
+                height: 700px;
+                border-width: 3px;
+            }
+        }
+
+        /* --- [NEW] ระบบกล่องข้อความแจ้งเตือน --- */
+        #customAlert {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--conan-gold);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 9999;
+            transition: 0.5s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        #customAlert.show { top: 20px; }
 
         .chat-header { 
             background: var(--conan-gold); 
@@ -55,7 +84,6 @@
             scroll-behavior: smooth; 
         }
 
-        /* --- Message Bubbles --- */
         .msg { 
             padding: 10px 14px; 
             border-radius: 15px; 
@@ -79,7 +107,6 @@
             font-weight: 500;
         }
 
-        /* --- Rich Menu System --- */
         .rich-menu-container { 
             background: #111; 
             border-top: 2px solid var(--conan-gold); 
@@ -87,13 +114,13 @@
 
         .menu-tabs { 
             display: grid; 
-            grid-template-columns: 1fr 1fr; 
+            grid-template-columns: 1fr 1fr 1fr; /* เพิ่ม Tab จีบ */
         }
 
         .tab { 
             padding: 12px; 
             text-align: center; 
-            font-size: 0.85rem; 
+            font-size: 0.8rem; 
             font-weight: 600; 
             cursor: pointer; 
             color: #888; 
@@ -135,7 +162,6 @@
             border-color: var(--conan-gold);
         }
 
-        /* Scrollbar Style */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -143,16 +169,19 @@
 </head>
 <body>
 
+<div id="customAlert">คดีใหม่กำลังจะเริ่มขึ้น! 🔍</div>
+
 <div id="chatWindow">
     <div class="chat-header">ผู้ช่วยนักสืบโคนัน</div>
     <div class="chat-body" id="chatBody">
-        <div class="msg bot">สวัสดีค่ะ! มีเรื่องไหนในโคนันที่อยากรู้เป็นพิเศษไหมคะ? ลองเลือกหัวข้อด้านล่างได้เลย!</div>
+        <div class="msg bot">สวัสดีค่ะ! พร้อมช่วยคุณสืบคดีแล้วนะคะ มีอะไรอยากรู้หรืออยากคุยเป็นพิเศษไหมคะ?</div>
     </div>
 
     <div class="rich-menu-container">
         <div class="menu-tabs">
-            <div class="tab active" id="tabMain" onclick="switchTab('main')">ข้อมูลทั่วไป</div>
-            <div class="tab" id="tabPromo" onclick="switchTab('promo')">คำถามยอดฮิต</div>
+            <div class="tab active" id="tabMain" onclick="switchTab('main')">ทั่วไป</div>
+            <div class="tab" id="tabPromo" onclick="switchTab('promo')">คำถามฮิต</div>
+            <div class="tab" id="tabLove" onclick="switchTab('love')">จีบแชท ❤️</div>
         </div>
         
         <div id="gridMain" class="menu-grid">
@@ -172,11 +201,21 @@
             <div class="menu-item" onclick="botReply('อากาอิขิตไหม')">อากาอิตายยัง?</div>
             <div class="menu-item" onclick="botReply('ทำไมโคนันไม่โต')">ทำไมไม่โต?</div>
         </div>
+
+        <div id="gridLove" class="menu-grid" style="display:none;">
+            <div class="menu-item" onclick="botReply('น่ารักจัง')">ชมว่าน่ารัก</div>
+            <div class="menu-item" onclick="botReply('เป็นแฟนกันไหม')">ขอเป็นแฟน</div>
+            <div class="menu-item" onclick="botReply('เหนื่อยจังเลย')">อ้อนขอคำชม</div>
+            <div class="menu-item" onclick="botReply('แต่งงานกันนะ')">ขอแต่งงาน</div>
+            <div class="menu-item" onclick="botReply('ชอบนะ')">บอกรัก</div>
+            <div class="menu-item" onclick="botReply('ขอไลน์หน่อย')">ขอช่องทางติดต่อ</div>
+        </div>
     </div>
 </div>
 
 <script>
     const responses = {
+        // ข้อมูลหลัก
         'ตอนแนะนำ': "ลองดู 'คดีฆาตกรรมเปียโนโซนาต้าแสงจันทร์' หรือ 'ทัศนศึกษาสีแดง' ดูสิคะ เป็นตอนที่แฟนโคนันห้ามพลาดเลย!",
         'มูฟวี่ล่าสุด': "ภาคล่าสุดคือเดอะมูฟวี่ 28 ค่ะ! ส่วนภาค 27 'ปริศนาปราการห้าแฉก' ก็สนุกมาก มีทั้งฮัตโตริและจอมโจรคิดเลย",
         'ใครคือบอส': "ความลับดำมืดขององค์กร! บอสคือ 'คาราสุมะ เร็นยะ' มหาเศรษฐีที่รวยที่สุดในญี่ปุ่นที่น่าจะตายไปนานแล้วค่ะ",
@@ -188,30 +227,57 @@
         'เบอร์เบินคือใคร': "เขาคือ 'อามุโร่ โทโอรุ' หรือชื่อจริงคือ 'ฟุรุยะ เรย์' เป็นตำรวจลับญี่ปุ่น (NPA) ที่แฝงตัวเข้าไปในองค์กรค่ะ",
         'รัมคือใคร': "อันดับ 2 ขององค์กรชุดดำคือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบโมรินั่นเอง!",
         'อากาอิขิตไหม': "ยังอยู่ดีค่ะ! ตอนนี้ปลอมตัวเป็น 'โอกิยะ สึบารุ' นักศึกษาปริญญาเอกที่อาศัยอยู่ในบ้านของชินอิจิค่ะ",
-        'ทำไมโคนันไม่โต': "ในเวลาของเนื้อเรื่องจริงๆ ผ่านไปไม่ถึงปีค่ะ (แม้โลกความจริงจะผ่านไป 30 ปีแล้วก็ตาม 555)"
+        'ทำไมโคนันไม่โต': "ในเวลาของเนื้อเรื่องจริงๆ ผ่านไปไม่ถึงปีค่ะ (แม้โลกความจริงจะผ่านไป 30 ปีแล้วก็ตาม 555)",
+
+        // [NEW] ระบบจีบแชท
+        'น่ารักจัง': "ปากหวานจังเลยนะคะ! เขินจนตัวจะเป็นสีแดงเหมือนสีตราประทับชินอิจิแล้วเนี่ย 😊",
+        'เป็นแฟนกันไหม': "อุ๊ย! ขอกันตรงๆ แบบนี้เลยเหรอคะ? เป็นแฟนกับ AI ต้องใจเย็นๆ นะคะ เพราะฉันสืบคดีเก่งกว่าทำกับข้าวอีก!",
+        'เหนื่อยจังเลย': "คนเก่งของฉัน... เหนื่อยก็พักบ้างนะคะ วันนี้คุณเก่งที่สุดแล้ว พักผ่อนแล้วมาคุยกับฉันใหม่นะ ❤️",
+        'แต่งงานกันนะ': "ต้องไปขอกับสารวัตรเมงูเระก่อนนะคะ! เพราะฉันติดคดีอยู่ทั่วบ้านทั่วเมืองเลยค่ะ 💍",
+        'ชอบนะ': "รู้แล้วค่ะ... ฉันก็ชอบคุยกับคุณที่สุดเลย เจ้าของคดีหัวใจของฉัน!",
+        'ขอไลน์หน่อย': "แอดไลน์ไม่ได้ งั้นแอดรักไปก่อนได้ไหมคะ? ล้อเล่นค่ะ! คุยกันในนี้ฉันสแตนด์บายรอคุณ 24 ชม. เลย"
     };
+
+    // ระบบแจ้งเตือน
+    function showAlert(text) {
+        const el = document.getElementById('customAlert');
+        el.innerText = text;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 3000);
+    }
 
     function switchTab(type) {
         document.getElementById('tabMain').classList.toggle('active', type === 'main');
         document.getElementById('tabPromo').classList.toggle('active', type === 'promo');
+        document.getElementById('tabLove').classList.toggle('active', type === 'love');
+        
         document.getElementById('gridMain').style.display = type === 'main' ? 'grid' : 'none';
         document.getElementById('gridPromo').style.display = type === 'promo' ? 'grid' : 'none';
+        document.getElementById('gridLove').style.display = type === 'love' ? 'grid' : 'none';
     }
 
     function botReply(cmd) {
         const body = document.getElementById('chatBody');
-        
-        // User Message
         body.innerHTML += `<div class="msg user">${cmd}</div>`;
         body.scrollTop = body.scrollHeight;
 
-        // Bot Response
         setTimeout(() => {
             const reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ?";
             body.innerHTML += `<div class="msg bot">${reply}</div>`;
             body.scrollTop = body.scrollHeight;
+            
+            // สุ่มแจ้งเตือนเมื่อคุยจบ
+            if(Math.random() > 0.7) {
+                setTimeout(() => showAlert("คุณได้รับข้อความใหม่จากผู้ช่วย!"), 1000);
+            }
         }, 500);
     }
+
+    // แจ้งเตือนเริ่มต้นเมื่อเข้าใช้งานตามอุปกรณ์
+    window.onload = () => {
+        const device = window.innerWidth < 768 ? "มือถือ" : "คอมพิวเตอร์";
+        showAlert(`เข้าใช้งานผ่าน ${device} เรียบร้อย!`);
+    };
 </script>
 
 </body>
