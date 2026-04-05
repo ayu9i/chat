@@ -3,179 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM CRITICAL ERROR | HACKED</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <title>System Recovery - Loading...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Courier+Prime&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --hacker-green: #00FF41; 
-            --bg-black: #000;
-            --system-blue: #00ccff;
+        :root {
+            --primary-gold: #d4af37;
+            --error-red: #ff3e3e;
+            --bg-dark: #0f0f0f;
+            --panel-bg: #1a1a1a;
         }
-        
+
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--bg-black);
+            margin: 0; padding: 0; height: 100%;
+            background-color: var(--bg-dark);
+            font-family: 'Kanit', sans-serif;
+            color: #fff;
             overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* --- Loading Overlay --- */
+        #loader-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        .progress-container {
+            width: 300px; height: 4px; background: #222;
+            border-radius: 10px; margin-top: 20px; overflow: hidden;
+        }
+
+        #progress-bar {
+            width: 0%; height: 100%; background: var(--primary-gold);
+            box-shadow: 0 0 15px var(--primary-gold);
+            transition: width 0.1s linear;
+        }
+
+        #status-text {
             font-family: 'Courier Prime', monospace;
+            font-size: 0.9rem; color: var(--primary-gold);
         }
 
-        #blackout {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: none;
+        /* --- Main Website Structure (Skeleton) --- */
+        .container {
+            max-width: 800px; margin: 0 auto; padding: 20px;
+            opacity: 0.3; /* เค้าโครงจางๆ */
+            transition: all 0.5s ease;
         }
 
-        /* --- เลเยอร์กู้ข้อมูลสำเร็จ (หลอกให้ดีใจ) --- */
-        #mockupChat {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #111; z-index: 5000; display: none;
-            justify-content: center; align-items: center;
-            flex-direction: column;
-        }
-        .chat-box-mock {
-            width: 350px; height: 500px; border: 2px solid #d4af37;
-            border-radius: 20px; background: #000; position: relative;
-        }
-        .recovery-success {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0, 204, 255, 0.9); color: white;
-            padding: 15px 30px; border-radius: 10px; font-weight: bold;
-            box-shadow: 0 0 20px var(--system-blue);
-            z-index: 5001; text-align: center; font-family: 'Kanit';
-            animation: pulse 0.5s infinite alternate;
-        }
-        @keyframes pulse { from { opacity: 0.7; } to { opacity: 1; } }
-
-        #matrixCanvas { position: fixed; top: 0; left: 0; z-index: 1; }
-
-        .hacker-overlay {
-            position: relative; z-index: 2; text-align: center;
-            background: rgba(0, 0, 0, 0.8); padding: 40px;
-            border: 2px solid var(--hacker-green);
-            box-shadow: 0 0 20px var(--hacker-green);
-            max-width: 90%; animation: flicker 0.1s infinite;
+        header {
+            height: 60px; border-bottom: 2px solid #333;
+            margin-bottom: 30px; display: flex; align-items: center;
         }
 
-        /* ข้อความสีแดงตอนโดนแฮ็กซ้ำ */
-        #overrideMsg {
-            color: #ff0000; font-weight: bold; display: none;
-            position: fixed; top: 20px; z-index: 10000; font-size: 1.2rem;
-            text-shadow: 0 0 10px red;
+        .skeleton-title {
+            width: 200px; height: 25px; background: #222; border-radius: 5px;
         }
 
-        .status-msg {
-            color: var(--hacker-green); font-size: 1.5rem;
-            font-weight: bold; text-transform: uppercase;
-            letter-spacing: 5px; margin-bottom: 20px;
+        .content-box {
+            background: var(--panel-bg); border: 1px solid #333;
+            padding: 20px; border-radius: 15px; min-height: 300px;
+            position: relative;
         }
 
-        .warning-text {
-            color: #ff0000; font-size: 1rem; margin-top: 10px;
-            border-top: 1px solid #ff0000; padding-top: 10px;
+        /* --- Glitch & Data Loss Effects --- */
+        .data-text {
+            color: #aaa; line-height: 1.6;
+            transition: filter 0.3s ease, opacity 1s ease;
         }
 
-        @keyframes flicker { 0% { opacity: 0.9; } 50% { opacity: 1; } 100% { opacity: 0.9; } }
+        .system-failure {
+            color: var(--error-red) !important;
+            text-shadow: 0 0 10px var(--error-red);
+            filter: blur(2px);
+            opacity: 0.2;
+        }
 
-        #loginOverlay, #chatWindow, #customAlert { display: none !important; }
+        #error-popup {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid var(--error-red);
+            padding: 20px; text-align: center;
+            display: none; z-index: 5000;
+            backdrop-filter: blur(5px);
+        }
+
+        .terminal-cursor {
+            display: inline-block; width: 10px; height: 18px;
+            background: var(--primary-gold); animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        /* สุ่มการสั่นของหน้าจอ */
+        .shake { animation: shake 0.2s infinite; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            20% { transform: translate(-2px, 0px); }
+            40% { transform: translate(2px, -1px); }
+            60% { transform: translate(-1px, 2px); }
+            100% { transform: translate(1px, -1px); }
+        }
     </style>
 </head>
 <body>
 
-    <div id="blackout"></div>
-    <div id="overrideMsg">! CRITICAL: OVERRIDDEN BY EXTERNAL SOURCE !</div>
-
-    <div id="mockupChat">
-        <div class="recovery-success">
-            กู้คืนข้อมูลสำเร็จ 100%<br>
-            <span style="font-size: 0.7rem;">SYSTEM RECOVERED</span>
+    <div id="loader-screen">
+        <div id="status-text">INITIALIZING DATA RECOVERY... 0%</div>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
         </div>
-        <div class="chat-box-mock">
-            <div style="background:#d4af37; height:40px; border-radius:18px 18px 0 0;"></div>
-        </div>
+        <div style="margin-top: 10px; font-size: 0.7rem; color: #444;">ID: CONAN_SYS_772</div>
     </div>
 
-    <canvas id="matrixCanvas"></canvas>
+    <div id="error-popup">
+        <h2 style="margin:0; font-size: 1.2rem;">CRITICAL DATA LOSS</h2>
+        <p style="font-size: 0.8rem;">FAILED TO LOAD SECTOR 0x00412</p>
+    </div>
 
-    <div class="hacker-overlay" id="hackerUI">
-        <div class="status-msg">SYSTEM HACKED</div>
-        <div style="color: #00FF41; font-size: 0.8rem;">
-            ACCESS DENIED... BYPASSING SECURITY...<br>
-            ENCRYPTING DATABASE... 100% DONE<br>
-            DELETING CONAN_ASSISTANT_V2.SYS
+    <div class="container" id="main-ui">
+        <header>
+            <div class="skeleton-title" id="web-title"></div>
+        </header>
+        
+        <div class="content-box">
+            <div id="content-body" class="data-text">
+                กำลังดึงข้อมูลฐานข้อมูลคดีล่าสุด...<br>
+                เชื่อมต่อเซิร์ฟเวอร์สำนักงานนักสืบโมริ...<br>
+                ยืนยันตัวตน: Edogawa Conan...
+            </div>
+            
+            <div style="margin-top: 50px; display: flex; gap: 10px;">
+                <div style="width: 80px; height: 80px; background: #222; border-radius: 10px;"></div>
+                <div style="flex:1;">
+                    <div style="width: 100%; height: 15px; background: #222; margin-bottom: 8px;"></div>
+                    <div style="width: 80%; height: 15px; background: #222;"></div>
+                </div>
+            </div>
         </div>
-        <div class="warning-text">CRITICAL ERROR: CONNECTION LOST</div>
     </div>
 
     <script>
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx = canvas.getContext('2d');
-        const blackout = document.getElementById('blackout');
-        const mockup = document.getElementById('mockupChat');
-        const hackerUI = document.getElementById('hackerUI');
-        const overrideMsg = document.getElementById('overrideMsg');
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
+        const loaderScreen = document.getElementById('loader-screen');
+        const contentBody = document.getElementById('content-body');
+        const mainUI = document.getElementById('main-ui');
+        const errorPopup = document.getElementById('error-popup');
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        let progress = 0;
 
-        const characters = "CONAN01SHINICHIAPTX4869KID1412ERRORHACKED010101";
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-        for (let i = 0; i < columns; i++) drops[i] = 1;
+        // ฟังก์ชันโหลดข้อมูล 1-100
+        const loading = setInterval(() => {
+            progress += Math.floor(Math.random() * 3) + 1;
+            if (progress > 100) progress = 100;
 
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00FF41";
-            ctx.font = fontSize + "px 'Courier Prime'";
-            for (let i = 0; i < drops.length; i++) {
-                const text = characters.charAt(Math.floor(Math.random() * characters.length));
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
+            progressBar.style.width = progress + '%';
+            statusText.innerText = `RECOVERING DATA... ${progress}%`;
+
+            if (progress === 100) {
+                clearInterval(loading);
+                setTimeout(triggerCrash, 800); // เมื่อถึง 100% ให้หน่วงเวลาแป๊บหนึ่งแล้วพัง
             }
-        }
-        setInterval(drawMatrix, 33);
+        }, 50);
 
-        function triggerGlitchLoop() {
-            // 1. เริ่มอาการจอดับ
+        function triggerCrash() {
+            // 1. หน้าจอเริ่มสั่น
+            document.body.classList.add('shake');
+            statusText.innerText = "ERROR: BUFFER OVERFLOW";
+            statusText.style.color = "#ff3e3e";
+            progressBar.style.background = "#ff3e3e";
+
             setTimeout(() => {
-                blackout.style.display = 'block';
-                
-                // 2. จอติดขึ้นมาพร้อมสถานะ "กู้ข้อมูลสำเร็จ" (แวบขึ้นมา 0.8 วินาที)
+                // 2. หน้าโหลดหายไป เห็นเค้าโครงหน้าเว็บ
+                loaderScreen.style.display = 'none';
+                mainUI.style.opacity = '1';
+                document.body.classList.remove('shake');
+
+                // 3. ข้อมูลในหน้าเว็บเริ่มหายและกลายเป็น Error
                 setTimeout(() => {
-                    blackout.style.display = 'none';
-                    mockup.style.display = 'flex';
-                    hackerUI.style.display = 'none';
-                    canvas.style.opacity = '0';
-
-                    // 3. แวบหนึ่งขึ้นคำเตือนสีแดงว่าโดน Override
+                    contentBody.innerHTML = "D@t# L0ss... [REDACTED] ... NULL ...";
+                    contentBody.classList.add('system-failure');
+                    errorPopup.style.display = 'block';
+                    
+                    // 4. เค้าโครงบางส่วนจางหายไป เหลือแต่โครงสร้างเปล่าๆ
                     setTimeout(() => {
-                        overrideMsg.style.display = 'block';
-                        
-                        // 4. กลับสู่สถานะโดนแฮ็กเหมือนเดิม
-                        setTimeout(() => {
-                            overrideMsg.style.display = 'none';
-                            mockup.style.display = 'none';
-                            hackerUI.style.display = 'block';
-                            canvas.style.opacity = '1';
-                            
-                            // วนลูปสุ่มเวลา 7-12 วินาที
-                            setTimeout(triggerGlitchLoop, Math.random() * 5000 + 7000);
-                        }, 400); // แสดงหน้ากู้ข้อมูลแค่แป๊บเดียว
+                        mainUI.style.filter = "grayscale(100%) contrast(50%)";
+                        console.error("FATAL ERROR: Module 'Data_Display' not found.");
+                    }, 1500);
+                }, 1000);
 
-                    }, 800); // ให้ดีใจ 0.8 วินาทีก่อนขึ้นสีแดง
-
-                }, 1200); // ดับไป 1.2 วินาที
-
-            }, 6000); // เริ่มหลังเปิดหน้าเว็บ 6 วินาที
+            }, 1000);
         }
-
-        window.onload = triggerGlitchLoop;
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
     </script>
 </body>
 </html>
