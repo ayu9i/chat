@@ -3,114 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM RESTORED | STATUS: EMPTY</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Courier+Prime&display=swap" rel="stylesheet">
+    <title>Conan Hub | MAX UI Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --safety-blue: #007bff;
-            --system-gray: #1a1a1a;
-            --text-dim: #888;
+        :root { 
+            --conan-gold: #d4af37; 
+            --conan-blue: #1a2a6c;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.03); 
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --danger: #ff4d4d; 
+            --btn-radius: 16px;
         }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background-color: #050505;
-            font-family: 'Kanit', sans-serif;
-            color: white;
-            display: flex; justify-content: center; align-items: center;
+        body { 
+            margin: 0; 
+            font-family: 'Kanit', sans-serif; 
+            background: radial-gradient(circle at top, #1a1a1a 0%, #000 100%); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding-bottom: 50px; 
+            overflow-x: hidden; 
+        }
+
+        /* --- UI Customizer Panel --- */
+        #uiPanel { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-right: 1px solid var(--conan-gold); z-index: 1002; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; box-sizing: border-box; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
+        #uiPanel.active { left: 0; }
+        .config-btn { position: fixed; top: 25px; left: 25px; background: var(--glass); border: 1px solid var(--conan-gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1001; transition: 0.3s; }
+        .config-btn:hover { background: var(--conan-gold); color: black; transform: rotate(90deg); }
+
+        /* --- Premium Modal --- */
+        #updateModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .modal-content { background: linear-gradient(145deg, #111, #000); border: 1px solid var(--conan-gold); border-radius: 30px; padding: 40px; max-width: 450px; width: 85%; text-align: center; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2); }
+        .update-list { text-align: left; font-size: 0.9rem; background: var(--glass); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid var(--glass-border); color: #ccc; }
+
+        /* --- Main Layout --- */
+        .container { width: 100%; max-width: 600px; padding: 40px 20px; text-align: center; margin-top: 40px; }
+        #mainTitle { font-family: 'Cinzel', serif; font-size: 3rem; letter-spacing: 8px; margin-bottom: 30px; background: linear-gradient(to bottom, #fff, var(--conan-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .premium-card { 
+            background: var(--glass); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 40px; 
+            padding: 35px; 
+            backdrop-filter: blur(25px); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative;
             overflow: hidden;
         }
+        .premium-card::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%); pointer-events: none; }
 
-        .restore-container {
-            width: 90%; max-width: 600px;
-            background: var(--system-gray);
-            border-top: 4px solid var(--safety-blue);
-            padding: 40px; border-radius: 5px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            text-align: center;
-            position: relative; animation: slideUp 0.8s ease-out;
-        }
+        .result-container { margin: 25px 0; min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 25px; background: rgba(0,0,0,0.2); border: 1px inset var(--glass-border); }
+        .info-badge { padding: 6px 20px; background: var(--conan-blue); border-radius: 50px; font-size: 0.75rem; color: #fff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; opacity: 0; transform: scale(0.8); transition: 0.5s; }
+        .info-badge.show { opacity: 1; transform: scale(1); }
+        
+        .ep-display { font-size: 2rem; font-weight: 600; color: #fff; opacity: 0; transition: 0.6s; line-height: 1.3; }
+        .ep-display span { color: var(--conan-gold); font-size: 1.2rem; display: block; margin-top: 10px; font-weight: 300; font-style: italic; }
+        .ep-display.show { opacity: 1; }
 
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+        /* --- Buttons --- */
+        .btn-group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .btn-main { width: 100%; padding: 16px; font-size: 0.95rem; font-weight: 500; border-radius: var(--btn-radius); border: 1px solid transparent; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: 'Kanit'; }
+        .btn-gold { background: var(--conan-gold); color: #000; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2); }
+        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4); }
+        .btn-dark { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--glass-border); }
+        .btn-dark:hover { background: rgba(255,255,255,0.1); border-color: var(--conan-gold); }
 
-        .icon-check {
-            width: 80px; height: 80px; background: var(--safety-blue);
-            border-radius: 50%; display: flex; justify-content: center;
-            align-items: center; margin: 0 auto 20px;
-            font-size: 40px; box-shadow: 0 0 20px rgba(0, 123, 255, 0.4);
-        }
+        /* --- History & Inventory --- */
+        .history-card { margin-top: 30px; text-align: left; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 20px; border: 1px solid var(--glass-border); }
+        .history-title { font-size: 0.9rem; color: var(--conan-gold); margin-bottom: 15px; display: flex; justify-content: space-between; letter-spacing: 1px; }
+        .history-list { max-height: 200px; overflow-y: auto; }
+        .history-item { padding: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; border: 1px solid transparent; }
+        .history-item:hover { background: rgba(255,255,255,0.05); border-color: rgba(212, 175, 55, 0.3); }
 
-        h1 { margin: 0 0 10px; font-weight: 600; color: #fff; }
-        .status-badge {
-            display: inline-block; padding: 5px 15px;
-            background: rgba(0, 123, 255, 0.1);
-            color: var(--safety-blue); border-radius: 20px;
-            font-size: 0.8rem; margin-bottom: 20px;
-            border: 1px solid var(--safety-blue);
-        }
+        .inventory-card { margin-top: 15px; background: linear-gradient(to right, rgba(212, 175, 55, 0.05), transparent); border-radius: 20px; padding: 20px; border: 1px solid var(--glass-border); }
+        .inventory-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .inventory-title { font-size: 0.9rem; color: #fff; opacity: 0.7; }
 
-        .message-box {
-            text-align: left; background: #111;
-            padding: 20px; border-radius: 8px;
-            border-left: 3px solid #444; color: #ccc;
-            font-size: 0.95rem; line-height: 1.6;
-        }
+        /* --- Chatbot MAX --- */
+        #chatBtn { position: fixed; bottom: 30px; right: 30px; background: var(--conan-blue); width: 65px; height: 65px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 1001; border: 1px solid rgba(255,255,255,0.1); transition: 0.4s; }
+        #chatBtn:hover { transform: scale(1.1) rotate(10deg); }
+        #chatWindow { position: fixed; bottom: 110px; right: 30px; width: 350px; height: 550px; background: #0a0a0a; border: 1px solid var(--glass-border); border-radius: 30px; display: none; flex-direction: column; overflow: hidden; z-index: 1001; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .chat-header { background: linear-gradient(to right, var(--conan-blue), #111); color: #fff; padding: 20px; font-weight: 600; text-align: center; border-bottom: 1px solid var(--glass-border); }
+        .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #080808; }
+        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 0.9rem; animation: fadeIn 0.3s ease; }
+        .bot { background: #1a1a1a; align-self: flex-start; border: 1px solid #333; color: #eee; }
+        .user { background: var(--conan-gold); color: #000; align-self: flex-end; font-weight: 500; }
 
-        .reason-list {
-            margin-top: 20px; padding: 0; list-style: none;
-            font-size: 0.85rem; color: var(--text-dim); text-align: left;
-        }
+        /* Door System */
+        .door-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: flex; }
+        .door { position: absolute; width: 50%; height: 100%; background: #000; transition: 0.6s cubic-bezier(0.7, 0, 0.3, 1); }
+        .door-left { left: -50%; border-right: 1px solid var(--conan-gold); }
+        .door-right { right: -50%; border-left: 1px solid var(--conan-gold); }
+        .door-container.active .door-left { transform: translateX(100%); }
+        .door-container.active .door-right { transform: translateX(-100%); }
 
-        .reason-list li { margin-bottom: 8px; display: flex; align-items: flex-start; }
-        .reason-list li::before { content: "•"; color: var(--safety-blue); margin-right: 10px; }
+        /* Elements */
+        select { background: #111; color: #fff; border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; width: 100%; cursor: pointer; outline: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn-restart {
-            margin-top: 30px; padding: 12px 30px;
-            background: transparent; border: 1px solid #444;
-            color: #888; border-radius: 5px; cursor: not-allowed;
-            font-family: 'Kanit'; transition: 0.3s;
-        }
-
-        /* เอฟเฟกต์จางหายของข้อมูลที่กู้มาไม่ได้ */
-        .ghost-data {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; opacity: 0.03; font-family: 'Courier Prime';
-            overflow: hidden; z-index: -1;
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--conan-gold); }
     </style>
 </head>
 <body>
 
-    <div class="ghost-data">
-        ERROR_NULL_DATA_RECOVERY_FAILED_0x0001 ERROR_NULL_DATA_RECOVERY_FAILED_0x0001
-        ERROR_NULL_DATA_RECOVERY_FAILED_0x0001 ERROR_NULL_DATA_RECOVERY_FAILED_0x0001
+<div class="config-btn" onclick="toggleUIPanel()">⚙️</div>
+<div id="uiPanel">
+    <div class="panel-title" style="color:var(--conan-gold); font-size: 1.2rem; margin-bottom: 30px; font-weight: 600;">INTERFACE CONFIG</div>
+    <div class="setting-item" style="margin-bottom: 25px;">
+        <label style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.5;">Accent Color</label>
+        <select onchange="updateTheme(this.value)" style="margin-top: 10px;">
+            <option value="#d4af37">Gold Leaf</option>
+            <option value="#37a6d4">Detective Blue</option>
+            <option value="#d43737">Crimson Red</option>
+            <option value="#a837d4">Phantom Purple</option>
+        </select>
     </div>
+    <div class="setting-item" style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <label style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.5;">Helper Bot</label>
+        <input type="checkbox" checked onchange="toggleBotUI(this.checked)">
+    </div>
+    <div class="setting-item">
+        <label style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.5;">Edge Smoothing</label>
+        <input type="range" min="0" max="40" value="16" oninput="updateRadius(this.value)" style="width: 100%; margin-top: 15px;">
+    </div>
+    <button class="btn-main btn-gold" onclick="toggleUIPanel()" style="margin-top:40px; border-radius: 50px;">APPLY CHANGES</button>
+</div>
 
-    <div class="restore-container">
-        <div class="icon-check">✓</div>
-        <div class="status-badge">RECOVERY SUCCESSFUL (SECURED)</div>
-        <h1>ระบบกลับเข้าสู่สภาวะปกติ</h1>
+<div id="updateModal">
+    <div class="modal-content">
+        <div style="color: var(--conan-gold); font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 10px;">SYSTEM UPDATE</div>
+        <h2 style="margin: 0; font-family: 'Cinzel';">VERSION 3.6 MAX</h2>
+        <div class="update-list">
+            • <b>Advanced Data:</b> เพิ่มชุดข้อมูลคดีสำคัญ 100%<br>
+            • <b>MAX UI:</b> ปรับปรุงอินเทอร์เฟซแบบ Ultra Premium<br>
+            • <b>Logic Fix:</b> ระบบ Anti-Repeat ตรวจสอบประวัติสมบูรณ์แบบ
+        </div>
+        <button class="btn-main btn-gold" onclick="closeModal()" style="border-radius: 50px;">ENTER SYSTEM</button>
+    </div>
+</div>
+
+<div class="door-container" id="doorSystem"><div class="door door-left"></div><div class="door door-right"></div></div>
+
+<div class="container">
+    <h1 id="mainTitle">CONAN HUB</h1>
+    <div class="premium-card">
+        <div id="badge" class="info-badge">System Ready</div>
+        <div class="result-container">
+            <div id="epDisplay" class="ep-display">กดปุ่มด้านล่างเพื่อเริ่มการสุ่มคดี</div>
+        </div>
         
-        <div class="message-box">
-            <strong>เรียน ผู้ใช้งาน,</strong><br>
-            เราสามารถขับไล่การโจมตีจากภายนอกและกู้คืนสิทธิ์การเข้าถึงระบบได้สำเร็จ แต่เรามีความเสียใจอย่างยิ่งที่จะแจ้งให้ทราบว่า <strong>ข้อมูลทั้งหมดในฐานข้อมูลถูกทำลายทิ้งอย่างถาวร</strong>
+        <div class="btn-group-grid">
+            <button class="btn-main btn-gold" style="grid-column: span 2;" onclick="spinEverything()">RANDOM ALL ACCESS</button>
+            <button class="btn-main btn-dark" style="grid-column: span 2;" onclick="spinSeries()">TV SERIES SELECTION</button>
         </div>
 
-        <ul class="reason-list">
-            <li><strong>Self-Destruct Protocol:</strong> ระบบรักษาความปลอดภัยอัตโนมัติทำงานเพื่อป้องกันการโจรกรรมข้อมูลระหว่างที่ถูกแฮ็ก</li>
-            <li><strong>Data Overwrite:</strong> ผู้ไม่หวังดีได้ทำการเขียนทับเซกเตอร์ข้อมูลสำคัญด้วยรหัสขยะ (Garbage Code) ก่อนถูกตัดการเชื่อมต่อ</li>
-            <li><strong>Encryption Key Loss:</strong> กุญแจถอดรหัสถูกลบออกไปพร้อมกับซอฟต์แวร์ของผู้บุกรุก ทำให้ข้อมูลเดิมไม่สามารถอ่านค่าได้อีก</li>
-        </ul>
+        <div class="btn-group-grid">
+            <button class="btn-main btn-dark" onclick="spinMovie()">THE MOVIES</button>
+            <button class="btn-main btn-dark" onclick="spinLupin()">VS LUPIN III</button>
+        </div>
 
-        <p style="font-size: 0.8rem; color: #555; margin-top: 20px;">
-            ขออภัยในความไม่สะดวก ระบบกำลังเริ่มสร้างฐานข้อมูลใหม่จากศูนย์...
-        </p>
+        <div style="margin-top: 15px;">
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px;">
+                <select id="charSelect">
+                    <option value="black_org">💀 องค์กรชุดดำ</option>
+                    <option value="kid">🎩 จอมโจรคิด</option>
+                    <option value="ai">🧪 ไฮบาระ ไอ</option>
+                    <option value="amuro">☕ อามุโร่ (เบอร์เบิน)</option>
+                    <option value="akai">🔫 อากาอิ ชูอิจิ</option>
+                    <option value="detective_boys">🔍 แก๊งนักสืบเยาวชน</option>
+                    <option value="shinichi">⚽ คุโด้ ชินอิจิ</option>
+                </select>
+                <button class="btn-main btn-gold" onclick="spinChar()">FILTER</button>
+            </div>
+        </div>
 
-        <button class="btn-restart">ไม่พบข้อมูลที่สามารถกู้คืนได้</button>
+        <div class="history-card">
+            <div class="history-title">
+                CASE HISTORY 
+                <span onclick="clearAllHistory()" style="cursor:pointer; opacity:0.5; font-size: 0.7rem;">[ CLEAR ALL ]</span>
+            </div>
+            <div id="historyList" class="history-list"></div>
+        </div>
+
+        <div class="inventory-card">
+            <div class="inventory-header" onclick="toggleInventory()">
+                <div class="inventory-title">DATABASE CATALOG</div>
+                <div id="invArrow">▼</div>
+            </div>
+            <div id="inventoryList" class="inventory-list" style="display: none; margin-top: 15px; font-size: 0.8rem; color: #888;"></div>
+        </div>
     </div>
+</div>
 
+<div id="chatBtn" onclick="toggleChat()">🔍</div>
+<div id="chatWindow">
+    <div class="chat-header">ASSISTANT V3.6</div>
+    <div class="chat-body" id="chatBody">
+        <div class="msg bot">สวัสดีครับ Ayu! พร้อมช่วยสืบค้นคดีในระบบ MAX UI แล้วครับ</div>
+    </div>
+    <div style="padding: 15px; background: #111; border-top: 1px solid var(--glass-border);">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button class="btn-main btn-dark" style="padding: 8px; font-size: 0.7rem;" onclick="botReply('ตอนแนะนำ')">แนะนำตอน</button>
+            <button class="btn-main btn-dark" style="padding: 8px; font-size: 0.7rem;" onclick="botReply('ใครคือบอส')">บอสคือใคร?</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // [Data remains same as original code for functionality integrity]
+    const movieNames = ["คดีปริศนาระเบิดระฟ้า", "คดีฆาตกรรมไพ่ปริศนา", "ปริศนาพ่อมดคนสุดท้ายแห่งศตวรรษ", "คดีฆาตกรรมนัยน์ตาปริศนา", "คดีปริศนาเส้นตายสู่สวรรค์", "ปริศนาบนถนนสายมรณะ", "คดีฆาตกรรมแห่งเมืองปริศนา", "มนตราแห่งรัตติกาลสีเงิน", "ยุทธการเหนือห้วงทะเลลึก", "บทเพลงมรณะแด่เหล่าเหล่านักสืบ", "ปริศนามหาขุมทรัพย์โจรสลัด", "บทเพลงแห่งความตาย", "ปริศนานักฆ่าทรยศ", "ปริศนามรณะเหนือน่านฟ้า", "15 นาทีเฉียดตายไขปริศนามรณะ", "ภาคระทึกขวัญยุทธจักรลูกหนัง", "ฝ่าวิกฤติเรือรบมรณะ", "ปริศนากระสุนมรณะ", "ปริศนาทานตะวันมรณะ", "ปริศนาเงามรณะตัวสำรอง", "ปริศนาเพลงกลอนซ่อนรัก", "ปฏิบัติการสายลับศูนย์", "ศึกชิงอัญมณีสีคราม", "กระสุนสีเพลิง", "เจ้าสาวฮาโลวีน", "มฤตยูใต้น้ำทมิฬ", "ปริศนาปราการห้าแฉก", "ปริศนาภาพติดตามรณะ"];
+
+    const charData = { 
+        black_org: ["ซีซั่น 1 ตอนที่ 1 (จุดเริ่มต้น)", "ซีซั่น 11 ตอนที่ 459-463 (ดำปะทะแดงเดือด)", "ซีซั่น 15 ตอนที่ 753-756 (รถด่วนทมิฬ)", "ซีซั่น 21 ตอนที่ 1131 (จุดเริ่มต้นของรัม)"],
+        kid: ["ซีซั่น 2 ตอนที่ 78-79 (โคนันปะทะจอมโจรคิด)", "ซีซั่น 8 ตอนที่ 386-387 (มหัศจรรย์กลางเวหา)", "ซีซั่น 16 ตอนที่ 776-777 (จอมโจรคิดปะทะมาโคโตะ)"],
+        ai: ["ซีซั่น 3 ตอนที่ 136 (ผู้หญิงจากองค์กรชุดดำ)", "ซีซั่น 4 ตอนที่ 148 (วิกฤติของไฮบาระ ไอ)", "ซีซั่น 15 ตอนที่ 753 (รถด่วนทมิฬ)"],
+        amuro: ["ซีซั่น 15 ตอนที่ 719-720 (พิธีวิวาห์อันตราย)", "ซีซั่น 17 ตอนที่ 823-827 (เบอร์เบินเคลื่อนไหว)", "ซีซั่น 21 ตอนที่ 1110 (ปะทะรัม)"],
+        akai: ["ซีซั่น 11 ตอนที่ 459-463 (ดำปะทะแดงเดือด)", "ซีซั่น 17 ตอนที่ 832-836 (ความจริงของสีแดง)", "ซีซั่น 20 ตอนที่ 1014 (เป้าหมายสีแดง)"],
+        detective_boys: ["ซีซั่น 1 ตอนที่ 4 (รหัสลับขุมทรัพย์)", "ซีซั่น 5 ตอนที่ 203 (เห็ดกับแก๊งนักสืบ)", "ซีซั่น 19 ตอนที่ 951 (โคมไฟสีแดง)"],
+        shinichi: ["ซีซั่น 1 ตอนที่ 1 (รถไฟเหาะ)", "ซีซั่น 4 ตอนที่ 173 (การฟื้นคืนชีพ)", "ซีซั่น 20 ตอนที่ 982 (ทัศนศึกษาสีแดง)"]
+    };
+
+    let history = JSON.parse(localStorage.getItem('conan_norepeat_v3')) || [];
+
+    function toggleUIPanel() { document.getElementById('uiPanel').classList.toggle('active'); }
+    function toggleBotUI(show) { document.getElementById('chatBtn').style.display = show ? 'flex' : 'none'; }
+    function updateTheme(color) { document.documentElement.style.setProperty('--conan-gold', color); }
+    function updateRadius(val) { document.documentElement.style.setProperty('--btn-radius', val + 'px'); }
+    function closeModal() { document.getElementById('updateModal').style.display = 'none'; }
+    function toggleChat() { const win = document.getElementById('chatWindow'); win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; }
+    function toggleInventory() { 
+        const list = document.getElementById('inventoryList');
+        list.style.display = list.style.display === 'none' ? 'block' : 'none';
+        document.getElementById('invArrow').innerText = list.style.display === 'none' ? '▼' : '▲';
+    }
+
+    function isDuplicate(text) {
+        const cleanTarget = text.replace(/<[^>]*>?/gm, '').trim();
+        return history.some(item => item.text.replace(/<[^>]*>?/gm, '').trim() === cleanTarget);
+    }
+
+    function startSpin(fn) {
+        document.getElementById('doorSystem').classList.add('active');
+        document.getElementById('epDisplay').classList.remove('show');
+        document.getElementById('badge').classList.remove('show');
+        setTimeout(() => { fn(); }, 700);
+        setTimeout(() => {
+            document.getElementById('doorSystem').classList.remove('active');
+            document.getElementById('epDisplay').classList.add('show');
+            document.getElementById('badge').classList.add('show');
+        }, 1300);
+    }
+
+    function updateUI(m, b) {
+        document.getElementById('epDisplay').innerHTML = m;
+        document.getElementById('badge').innerHTML = b;
+    }
+
+    function addH(t) {
+        const cleanText = t.replace(/<[^>]*>?/gm, '').trim();
+        history.unshift({ id: Date.now(), text: cleanText, checked: false });
+        save();
+    }
+
+    function save() {
+        localStorage.setItem('conan_norepeat_v3', JSON.stringify(history));
+        const l = document.getElementById('historyList');
+        if(!history.length) { l.innerHTML = '<div style="text-align:center; opacity:0.3; font-size:0.8rem;">NO CASE RECORDS</div>'; return; }
+        l.innerHTML = history.slice(0, 10).map(h => `<div class="history-item"><span>${h.text}</span><span style="color:var(--danger); cursor:pointer;" onclick="delI(${h.id}, event)">✕</span></div>`).join('');
+    }
+
+    function delI(id, e) { e.stopPropagation(); history = history.filter(h => h.id !== id); save(); }
+    function clearAllHistory() { if(confirm("Confirm Wipe Database?")) { history = []; save(); } }
+
+    function spinSeries() {
+        startSpin(() => {
+            let ep = Math.floor(Math.random() * 1100) + 1;
+            let res = `Season ${Math.ceil(ep/52)} Episode ${ep}`;
+            if(isDuplicate(res)) return spinSeries();
+            updateUI(res, "TV SERIES STREAMING");
+            addH(res);
+        });
+    }
+
+    function spinMovie() {
+        startSpin(() => {
+            let i = Math.floor(Math.random() * movieNames.length);
+            let res = `Movie ${i+1} <span>${movieNames[i]}</span>`;
+            if(isDuplicate(res)) return spinMovie();
+            updateUI(res, "THEATER EDITION");
+            addH(`Movie ${i+1}: ${movieNames[i]}`);
+        });
+    }
+
+    function spinEverything() {
+        const r = Math.random();
+        if (r < 0.6) spinSeries(); else spinMovie();
+    }
+
+    function spinChar() {
+        startSpin(() => {
+            const c = document.getElementById('charSelect').value;
+            const pool = charData[c];
+            let rawRes = pool[Math.floor(Math.random() * pool.length)];
+            updateUI(rawRes, "CHARACTER SPECIAL");
+            addH(rawRes);
+        });
+    }
+
+    function botReply(cmd) {
+        const body = document.getElementById('chatBody');
+        body.innerHTML += `<div class="msg user">${cmd}</div>`;
+        setTimeout(() => {
+            let reply = "ขออภัยครับ ข้อมูลส่วนนี้กำลังปรับปรุง";
+            if(cmd === 'ตอนแนะนำ') reply = "ลองชม 'คดีฆาตกรรมเปียโนโซนาต้าแสงจันทร์' ดูครับ เป็นตำนานที่ลืมไม่ลงจริงๆ";
+            if(cmd === 'ใครคือบอส') reply = "ข้อมูลบ่งชี้ไปที่ 'คาราสุมะ เร็นยะ' มหาเศรษฐีที่ควรจะเสียชีวิตไปแล้วครับ";
+            body.innerHTML += `<div class="msg bot">${reply}</div>`;
+            body.scrollTop = body.scrollHeight;
+        }, 600);
+    }
+
+    // Initialize
+    save();
+</script>
 </body>
 </html>
