@@ -67,7 +67,6 @@
             to { top: 100%; }
         }
 
-        /* Final UI Style */
         .threat-box {
             width: 90%;
             max-width: 700px;
@@ -92,7 +91,7 @@
             background: #f00;
             height: 100%;
             box-shadow: 0 0 10px #f00;
-            animation: fillProgress 7s forwards;
+            animation: fillProgress 60s linear forwards; /* วิ่งเต็มภายใน 60 วินาที */
         }
 
         @keyframes fillProgress {
@@ -177,7 +176,6 @@
         }
 
         function executeBoom() {
-            // "ตู้ม" Flash Effect
             document.body.style.backgroundColor = "white";
             mainContent.innerHTML = `<h1 style="color:black; font-size: 100px; font-weight: bold;">ตู้ม!</h1>`;
             
@@ -196,31 +194,51 @@
                     
                     <p style="color:#ff4444; font-size: 1.1rem; line-height: 1.6;">
                         <span style="background:#f00; color:#fff; padding: 2px 8px; font-weight: bold;">FINAL WARNING:</span><br><br>
-                        บัญชีและ Repository นี้ได้รับการตรวจสอบแล้วว่ามีการละเมิดนโยบายความปลอดภัย
+                        บัญชีนี้ถูกระงับเนื่องจากตรวจพบกิจกรรมที่ผิดปกติ ระบบความปลอดภัยของ Google เริ่มกระบวนการล้างข้อมูล
                     </p>
                     
                     <div style="background:#111; padding: 15px; border-left: 5px solid #f00; margin: 20px 0;">
                         <p style="color:#0f0; margin: 0; font-family: monospace; line-height: 1.8;">
-                            > STATUS: <span style="color:#f00; font-weight:bold;">PERMANENTLY DISABLED</span><br>
-                            > ISSUED BY: GOOGLE SECURITY OPS<br>
-                            > ACTION: DATA PURGE SCHEDULED<br>
-                            > TIME REMAINING: <span style="color:#fff; text-decoration: underline;">06 วัน 23 ชั่วโมง 59 นาที</span>
+                            > STATUS: <span style="color:#f00; font-weight:bold;">DELETION IN PROGRESS</span><br>
+                            > AUTHORITY: GOOGLE SECURITY OPS<br>
+                            > ACTION: WIPE ALL DIRECTORIES<br>
+                            > TIME REMAINING: <span id="timer" style="color:#fff; font-weight:bold; font-size: 1.2rem;">01:00</span>
                         </p>
                     </div>
 
                     <p style="color:#ccc; text-align: center; font-style: italic; border: 1px dashed #444; padding: 10px;">
-                        "ไฟล์และฐานข้อมูลทั้งหมดจะถูกถอนรากถอนโคนออกจากเซิร์ฟเวอร์ Google โดยสมบูรณ์ภายใน 7 วัน"
+                        "ไฟล์และข้อมูลสำรองทั้งหมดจะถูกเผิกถอนโดยสมบูรณ์ภายใน 1 นาที"
                     </p>
                     
                     <div class="progress-bar-bg">
                         <div class="progress-bar-fill"></div>
                     </div>
-                    <p style="color:#555; font-size: 0.85rem; text-align: right; margin-top: 8px;">De-indexing from Google Search: 14.8%...</p>
+                    <p id="status-text" style="color:#555; font-size: 0.85rem; text-align: right; margin-top: 8px;">Purging data: 0%...</p>
                 </div>
             `;
+
+            // เริ่มตัวนับถอยหลัง 1 นาที (60 วินาที)
+            let seconds = 60;
+            const timerDisplay = document.getElementById('timer');
+            const statusText = document.getElementById('status-text');
+            
+            const finalCount = setInterval(() => {
+                seconds--;
+                let m = Math.floor(seconds / 60);
+                let s = seconds % 60;
+                timerDisplay.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                // สุ่มตัวเลขเปอร์เซ็นต์การลบ
+                let percent = Math.floor(((60 - seconds) / 60) * 100);
+                statusText.innerText = `Purging data: ${percent}%...`;
+
+                if (seconds <= 0) {
+                    clearInterval(finalCount);
+                    document.body.innerHTML = "<h1 style='color:red; font-size: 3rem;'>DATA PURGED.</h1>";
+                }
+            }, 1000);
         }
 
-        // เริ่มทำงานครั้งแรก
         setTimeout(addLog, 1000);
     </script>
 </body>
