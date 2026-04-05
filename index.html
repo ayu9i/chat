@@ -3,185 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DETECTIVE SYSTEM | DATA WAR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <title>SYSTEM RESTORED | STATUS: EMPTY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Courier+Prime&display=swap" rel="stylesheet">
     <style>
         :root {
-            --recovery-blue: #00e1ff;
-            --hacker-red: #ff003c;
-            --bg-black: #080808;
+            --safety-blue: #007bff;
+            --system-gray: #1a1a1a;
+            --text-dim: #888;
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background-color: var(--bg-black);
-            font-family: 'Courier Prime', monospace;
-            overflow: hidden; color: #fff;
+            background-color: #050505;
+            font-family: 'Kanit', sans-serif;
+            color: white;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
         }
 
-        /* --- Scanline & Glitch Effect --- */
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 3px, 2px 100%;
-            z-index: 1000; pointer-events: none;
+        .restore-container {
+            width: 90%; max-width: 600px;
+            background: var(--system-gray);
+            border-top: 4px solid var(--safety-blue);
+            padding: 40px; border-radius: 5px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative; animation: slideUp 0.8s ease-out;
         }
 
-        .container {
-            display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box;
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        /* --- Battle Header --- */
-        .battle-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border: 2px solid #333; padding: 15px; background: rgba(255,255,255,0.05);
-            margin-bottom: 20px;
+        .icon-check {
+            width: 80px; height: 80px; background: var(--safety-blue);
+            border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; margin: 0 auto 20px;
+            font-size: 40px; box-shadow: 0 0 20px rgba(0, 123, 255, 0.4);
         }
 
-        .side-info { width: 40%; font-weight: bold; font-size: 1.2rem; }
-        .recovery-side { color: var(--recovery-blue); text-shadow: 0 0 10px var(--recovery-blue); }
-        .hacker-side { color: var(--hacker-red); text-align: right; text-shadow: 0 0 10px var(--hacker-red); }
-
-        /* --- Progress Battle Bar --- */
-        .battle-ground {
-            height: 50px; border: 2px solid #444; position: relative; 
-            overflow: hidden; background: #500; margin-bottom: 20px;
+        h1 { margin: 0 0 10px; font-weight: 600; color: #fff; }
+        .status-badge {
+            display: inline-block; padding: 5px 15px;
+            background: rgba(0, 123, 255, 0.1);
+            color: var(--safety-blue); border-radius: 20px;
+            font-size: 0.8rem; margin-bottom: 20px;
+            border: 1px solid var(--safety-blue);
         }
 
-        #progress-bar {
-            height: 100%; width: 50%;
-            background: linear-gradient(90deg, #0055ff, var(--recovery-blue));
-            box-shadow: 0 0 20px var(--recovery-blue);
-            transition: width 0.15s ease-in-out;
-            position: relative; z-index: 2;
+        .message-box {
+            text-align: left; background: #111;
+            padding: 20px; border-radius: 8px;
+            border-left: 3px solid #444; color: #ccc;
+            font-size: 0.95rem; line-height: 1.6;
         }
 
-        .hacker-label {
-            position: absolute; right: 15px; top: 12px; z-index: 3;
-            color: white; font-weight: bold; font-size: 0.8rem;
+        .reason-list {
+            margin-top: 20px; padding: 0; list-style: none;
+            font-size: 0.85rem; color: var(--text-dim); text-align: left;
         }
 
-        /* --- Console Logs --- */
-        .logs-wrapper {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; overflow: hidden;
+        .reason-list li { margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .reason-list li::before { content: "•"; color: var(--safety-blue); margin-right: 10px; }
+
+        .btn-restart {
+            margin-top: 30px; padding: 12px 30px;
+            background: transparent; border: 1px solid #444;
+            color: #888; border-radius: 5px; cursor: not-allowed;
+            font-family: 'Kanit'; transition: 0.3s;
         }
 
-        .console {
-            background: rgba(0,0,0,0.8); border: 1px solid #333;
-            padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;
-        }
-
-        .console-header {
-            font-size: 0.7rem; color: #666; border-bottom: 1px solid #333;
-            margin-bottom: 10px; padding-bottom: 5px;
-        }
-
-        .log-entry { font-size: 0.8rem; line-height: 1.2; }
-        .recovery-log { color: var(--recovery-blue); }
-        .hacker-log { color: var(--hacker-red); }
-
-        .blink { animation: blinker 0.2s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0.3; } }
-
-        .shake { animation: shake 0.1s infinite; }
-        @keyframes shake {
-            0% { transform: translate(1px, 1px); }
-            50% { transform: translate(-1px, -1px); }
-            100% { transform: translate(0, 0); }
+        /* เอฟเฟกต์จางหายของข้อมูลที่กู้มาไม่ได้ */
+        .ghost-data {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; opacity: 0.03; font-family: 'Courier Prime';
+            overflow: hidden; z-index: -1;
         }
     </style>
 </head>
-<body id="body">
+<body>
 
-    <div class="overlay"></div>
-
-    <div class="container">
-        <div class="battle-header">
-            <div class="side-info recovery-side">RECOVERY: ONLINE</div>
-            <div style="font-size: 0.8rem; color: #555;">VS</div>
-            <div class="side-info hacker-side">HACKER: ATTACKING</div>
-        </div>
-
-        <div class="battle-ground" id="ground">
-            <div id="progress-bar"></div>
-            <div class="hacker-label blink">ALARM: UNAUTHORIZED OVERRIDE</div>
-        </div>
-
-        <div class="logs-wrapper">
-            <div class="console" id="recovery-console">
-                <div class="console-header">SYSTEM_LOG / RECOVERY_TASK</div>
-                <div class="log-entry recovery-log">>> Initiating anti-virus protocols...</div>
-            </div>
-
-            <div class="console" id="hacker-console">
-                <div class="console-header">EXTERNAL_SOURCE / BREACH_PROCESS</div>
-                <div class="log-entry hacker-log">>> Injecting malicious scripts...</div>
-            </div>
-        </div>
+    <div class="ghost-data">
+        ERROR_NULL_DATA_RECOVERY_FAILED_0x0001 ERROR_NULL_DATA_RECOVERY_FAILED_0x0001
+        ERROR_NULL_DATA_RECOVERY_FAILED_0x0001 ERROR_NULL_DATA_RECOVERY_FAILED_0x0001
     </div>
 
-    <script>
-        const progressBar = document.getElementById('progress-bar');
-        const recoveryConsole = document.getElementById('recovery-console');
-        const hackerConsole = document.getElementById('hacker-console');
-        const body = document.getElementById('body');
+    <div class="restore-container">
+        <div class="icon-check">✓</div>
+        <div class="status-badge">RECOVERY SUCCESSFUL (SECURED)</div>
+        <h1>ระบบกลับเข้าสู่สภาวะปกติ</h1>
+        
+        <div class="message-box">
+            <strong>เรียน ผู้ใช้งาน,</strong><br>
+            เราสามารถขับไล่การโจมตีจากภายนอกและกู้คืนสิทธิ์การเข้าถึงระบบได้สำเร็จ แต่เรามีความเสียใจอย่างยิ่งที่จะแจ้งให้ทราบว่า <strong>ข้อมูลทั้งหมดในฐานข้อมูลถูกทำลายทิ้งอย่างถาวร</strong>
+        </div>
 
-        let progress = 50; // เริ่มต้นที่ครึ่งหนึ่ง
+        <ul class="reason-list">
+            <li><strong>Self-Destruct Protocol:</strong> ระบบรักษาความปลอดภัยอัตโนมัติทำงานเพื่อป้องกันการโจรกรรมข้อมูลระหว่างที่ถูกแฮ็ก</li>
+            <li><strong>Data Overwrite:</strong> ผู้ไม่หวังดีได้ทำการเขียนทับเซกเตอร์ข้อมูลสำคัญด้วยรหัสขยะ (Garbage Code) ก่อนถูกตัดการเชื่อมต่อ</li>
+            <li><strong>Encryption Key Loss:</strong> กุญแจถอดรหัสถูกลบออกไปพร้อมกับซอฟต์แวร์ของผู้บุกรุก ทำให้ข้อมูลเดิมไม่สามารถอ่านค่าได้อีก</li>
+        </ul>
 
-        const recoveryActions = [
-            ">> Repairing corrupted sector 0x44...",
-            ">> Data fragment recovered: 'evidence.jpg'",
-            ">> Reinforcing firewall layers...",
-            ">> Patching security loophole...",
-            ">> Syncing with backup server..."
-        ];
+        <p style="font-size: 0.8rem; color: #555; margin-top: 20px;">
+            ขออภัยในความไม่สะดวก ระบบกำลังเริ่มสร้างฐานข้อมูลใหม่จากศูนย์...
+        </p>
 
-        const hackerActions = [
-            ">> Bruteforce attack in progress...",
-            ">> Deleting 'system_config.sys'...",
-            ">> Overwriting memory sector...",
-            ">> Disconnecting recovery node...",
-            ">> Encryption virus spreading..."
-        ];
+        <button class="btn-restart">ไม่พบข้อมูลที่สามารถกู้คืนได้</button>
+    </div>
 
-        function addLog(consoleEl, text, className) {
-            const div = document.createElement('div');
-            div.className = 'log-entry ' + className;
-            div.innerText = text;
-            consoleEl.appendChild(div);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-            if(consoleEl.childElementCount > 20) consoleEl.removeChild(consoleEl.childNodes[1]);
-        }
-
-        // ระบบต่อสู้ของ Progress Bar
-        const battleInterval = setInterval(() => {
-            // สุ่มแต้มที่แต่ละฝั่งจะได้
-            const recoveryPower = Math.random() * 4;
-            const hackerPower = Math.random() * 4.2; // แฮ็กเกอร์แรงกว่านิดหน่อย
-
-            progress += (recoveryPower - hackerPower);
-
-            // จำกัดขอบเขต 0-100
-            if (progress > 95) progress = 95; // ไม่ยอมให้เต็มง่ายๆ
-            if (progress < 5) progress = 5;   // ไม่ยอมให้พังทันที
-
-            progressBar.style.width = progress + "%";
-
-            // เอฟเฟกต์หน้าจอสั่นเมื่อแฮ็กเกอร์นำ
-            if (hackerPower > 3.5) {
-                body.classList.add('shake');
-                setTimeout(() => body.classList.remove('shake'), 100);
-                addLog(hackerConsole, hackerActions[Math.floor(Math.random() * hackerActions.length)], 'hacker-log');
-            }
-
-            // เพิ่ม Log ฝั่งกู้
-            if (recoveryPower > 3.5) {
-                addLog(recoveryConsole, recoveryActions[Math.floor(Math.random() * recoveryActions.length)], 'recovery-log');
-            }
-
-        }, 200);
-
-    </script>
 </body>
 </html>
