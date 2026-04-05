@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Hub | MAX UI Edition</title>
+    <title>Conan Hub | Anti-Repeat MAX</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -17,108 +17,58 @@
         }
 
         body { 
-            margin: 0; 
-            font-family: 'Kanit', sans-serif; 
+            margin: 0; font-family: 'Kanit', sans-serif; 
             background: radial-gradient(circle at top, #1a1a1a 0%, #000 100%); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh; 
-            padding-bottom: 50px; 
-            overflow-x: hidden; 
+            color: white; display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; padding-bottom: 50px; overflow-x: hidden; 
         }
 
-        /* --- UI Panels --- */
-        #uiPanel { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-right: 1px solid var(--conan-gold); z-index: 1002; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; box-sizing: border-box; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
-        #uiPanel.active { left: 0; }
+        /* --- Header & UI --- */
         .config-btn { position: fixed; top: 25px; left: 25px; background: var(--glass); border: 1px solid var(--conan-gold); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1001; transition: 0.3s; }
-        .config-btn:hover { background: var(--conan-gold); color: black; transform: rotate(90deg); }
-        .lang-btn { position: fixed; top: 25px; right: 25px; background: var(--glass); border: 1px solid var(--glass-border); padding: 8px 15px; border-radius: 20px; color: #fff; cursor: pointer; z-index: 1001; font-size: 0.8rem; transition: 0.3s; }
-        .lang-btn:hover { border-color: var(--conan-gold); background: rgba(212, 175, 55, 0.1); }
+        .lang-btn { position: fixed; top: 25px; right: 25px; background: var(--glass); border: 1px solid var(--glass-border); padding: 8px 15px; border-radius: 20px; color: #fff; cursor: pointer; z-index: 1001; font-size: 0.8rem; }
 
-        /* --- Premium Modal --- */
-        #updateModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-content { background: linear-gradient(145deg, #111, #000); border: 1px solid var(--conan-gold); border-radius: 30px; padding: 40px; max-width: 450px; width: 85%; text-align: center; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2); }
-
-        /* --- Main Layout --- */
         .container { width: 100%; max-width: 600px; padding: 40px 20px; text-align: center; margin-top: 40px; }
         #mainTitle { font-family: 'Cinzel', serif; font-size: 3rem; letter-spacing: 8px; margin-bottom: 30px; background: linear-gradient(to bottom, #fff, var(--conan-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .premium-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 40px; padding: 35px; backdrop-filter: blur(25px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
-        .result-container { margin: 25px 0; min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 25px; background: rgba(0,0,0,0.2); border: 1px inset var(--glass-border); }
-        .info-badge { padding: 6px 20px; background: var(--conan-blue); border-radius: 50px; font-size: 0.75rem; color: #fff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; opacity: 0; transform: scale(0.8); transition: 0.5s; }
-        .info-badge.show { opacity: 1; transform: scale(1); }
-        .ep-display { font-size: 1.8rem; font-weight: 600; color: #fff; opacity: 0; transition: 0.6s; line-height: 1.3; }
-        .ep-display span { color: var(--conan-gold); font-size: 1.1rem; display: block; margin-top: 10px; font-weight: 300; }
+
+        .premium-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 40px; padding: 35px; backdrop-filter: blur(25px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); position: relative; }
+        .result-container { margin: 25px 0; min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 25px; background: rgba(0,0,0,0.2); border: 1px inset var(--glass-border); padding: 20px; }
+        
+        .info-badge { padding: 6px 20px; background: var(--conan-blue); border-radius: 50px; font-size: 0.75rem; color: #fff; margin-bottom: 15px; opacity: 0; transition: 0.5s; }
+        .info-badge.show { opacity: 1; }
+        
+        .ep-display { font-size: 1.6rem; font-weight: 600; color: #fff; opacity: 0; transition: 0.6s; }
+        .ep-display span { color: var(--conan-gold); font-size: 1rem; display: block; margin-top: 8px; font-weight: 300; }
         .ep-display.show { opacity: 1; }
 
         /* --- Buttons --- */
         .btn-group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .btn-main { width: 100%; padding: 16px; font-size: 0.95rem; font-weight: 500; border-radius: var(--btn-radius); border: 1px solid transparent; cursor: pointer; transition: 0.4s; font-family: 'Kanit'; }
-        .btn-gold { background: var(--conan-gold); color: #000; }
+        .btn-main { width: 100%; padding: 16px; font-size: 0.95rem; border-radius: var(--btn-radius); border: 1px solid transparent; cursor: pointer; transition: 0.3s; font-family: 'Kanit'; }
+        .btn-gold { background: var(--conan-gold); color: #000; font-weight: 600; }
         .btn-dark { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--glass-border); }
-        .btn-dark:hover { border-color: var(--conan-gold); }
+        .btn-dark:hover { border-color: var(--conan-gold); background: rgba(255,255,255,0.1); }
 
         /* --- History --- */
         .history-card { margin-top: 30px; text-align: left; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 20px; border: 1px solid var(--glass-border); }
-        .history-title { font-size: 0.9rem; color: var(--conan-gold); margin-bottom: 15px; display: flex; justify-content: space-between; }
-        .history-list { max-height: 200px; overflow-y: auto; }
-        .history-item { padding: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 12px; display: flex; justify-content: space-between; border: 1px solid transparent; font-size: 0.85rem; }
+        .history-title { font-size: 0.85rem; color: var(--conan-gold); margin-bottom: 15px; display: flex; justify-content: space-between; letter-spacing: 1px; }
+        .history-list { max-height: 250px; overflow-y: auto; }
+        .history-item { padding: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.03); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--conan-gold); font-size: 0.85rem; }
 
-        /* Door System WITH ENHANCED PATTERNS */
+        /* --- Doors with Pattern --- */
         .door-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: flex; }
-        .door { position: absolute; width: 50%; height: 100%; background: #0a0a0a; transition: 0.8s cubic-bezier(0.7, 0, 0.3, 1); overflow: hidden; }
-        
-        /* Gold Lines Pattern */
-        .door::before {
-            content: ""; position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background-image: linear-gradient(45deg, transparent 45%, var(--conan-gold) 48%, var(--conan-gold) 52%, transparent 55%);
-            background-size: 60px 60px; opacity: 0.1;
-        }
-        
+        .door { position: absolute; width: 50%; height: 100%; background: #080808; transition: 0.8s cubic-bezier(0.7, 0, 0.3, 1); }
+        .door::after { content: ""; position: absolute; width: 100%; height: 100%; background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(212,175,55,0.03) 20px, rgba(212,175,55,0.03) 40px); }
         .door-left { left: -50%; border-right: 2px solid var(--conan-gold); }
         .door-right { right: -50%; border-left: 2px solid var(--conan-gold); }
-        
         .door-container.active .door-left { transform: translateX(100%); }
         .door-container.active .door-right { transform: translateX(-100%); }
 
-        /* Chatbot */
-        #chatBtn { position: fixed; bottom: 30px; right: 30px; background: var(--conan-blue); width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 1001; }
-        #chatWindow { position: fixed; bottom: 100px; right: 30px; width: 320px; height: 480px; background: #0a0a0a; border: 1px solid var(--glass-border); border-radius: 25px; display: none; flex-direction: column; overflow: hidden; z-index: 1001; }
-        .chat-header { background: var(--conan-blue); color: #fff; padding: 15px; text-align: center; font-weight: 600; }
-        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #080808; }
-        .msg { padding: 10px 14px; border-radius: 15px; font-size: 0.85rem; }
-        .bot { background: #1a1a1a; align-self: flex-start; color: #eee; border: 1px solid #333; }
-        .user { background: var(--conan-gold); align-self: flex-end; color: #000; }
-
-        select { background: #111; color: #fff; border: 1px solid var(--glass-border); padding: 10px; border-radius: 10px; width: 100%; outline: none; }
+        select { background: #111; color: #fff; border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; width: 100%; outline: none; }
     </style>
 </head>
 <body>
 
-<div class="lang-btn" onclick="toggleLanguage()" id="langToggle">EN | TH</div>
-<div class="config-btn" onclick="toggleUIPanel()">⚙️</div>
-
-<div id="uiPanel">
-    <div id="txt-config-title" style="color:var(--conan-gold); font-size: 1.1rem; margin-bottom: 25px; font-weight: 600;">INTERFACE CONFIG</div>
-    <div style="margin-bottom: 20px;">
-        <label id="txt-accent-label" style="font-size: 0.7rem; opacity: 0.5;">ACCENT COLOR</label>
-        <select onchange="updateTheme(this.value)" style="margin-top: 8px;">
-            <option value="#d4af37">Gold Leaf</option>
-            <option value="#37a6d4">Detective Blue</option>
-            <option value="#d43737">Crimson Red</option>
-        </select>
-    </div>
-    <button class="btn-main btn-gold" id="txt-apply-btn" onclick="toggleUIPanel()" style="border-radius: 50px;">APPLY</button>
-</div>
-
-<div id="updateModal">
-    <div class="modal-content">
-        <h2 style="font-family: 'Cinzel'; margin:0;" id="txt-modal-ver">VERSION 3.6.1 FIX</h2>
-        <p style="font-size: 0.85rem; color: #888;" id="txt-modal-list">• Fixed Lupin Duplicate Bug<br>• Updated Lupin Year Dates (2009/2013)</p>
-        <button class="btn-main btn-gold" onclick="closeModal()" style="border-radius: 50px; width: 150px;">ENTER</button>
-    </div>
-</div>
+<div class="lang-btn" onclick="toggleLanguage()">EN | TH</div>
+<div class="config-btn" onclick="location.reload()">🔄</div>
 
 <div class="door-container" id="doorSystem">
     <div class="door door-left"></div>
@@ -128,106 +78,38 @@
 <div class="container">
     <h1 id="mainTitle">CONAN HUB</h1>
     <div class="premium-card">
-        <div id="badge" class="info-badge">System Ready</div>
+        <div id="badge" class="info-badge">SYSTEM READY</div>
         <div class="result-container">
-            <div id="epDisplay" class="ep-display">กดปุ่มด้านล่างเพื่อเริ่มการสุ่มคดี</div>
+            <div id="epDisplay" class="ep-display">เลือกหมวดหมู่เพื่อสุ่มคดีที่ไม่ซ้ำ</div>
         </div>
         
         <div class="btn-group-grid">
-            <button class="btn-main btn-gold" id="txt-btn-all" style="grid-column: span 2;" onclick="spinEverything()">RANDOM ALL</button>
-            <button class="btn-main btn-dark" id="txt-btn-tv" style="grid-column: span 2;" onclick="spinSeries()">TV SERIES</button>
-            <button class="btn-main btn-dark" id="txt-btn-movie" onclick="spinMovie()">MOVIES</button>
+            <button class="btn-main btn-gold" id="txt-btn-all" style="grid-column: span 2;" onclick="spinEverything()">RANDOM ALL ACCESS</button>
+            <button class="btn-main btn-dark" id="txt-btn-tv" style="grid-column: span 2;" onclick="spinSeries()">TV SERIES SELECTION</button>
+            <button class="btn-main btn-dark" id="txt-btn-movie" onclick="spinMovie()">THE MOVIES</button>
             <button class="btn-main btn-dark" id="txt-btn-lupin" onclick="spinLupin()">VS LUPIN III</button>
-        </div>
-
-        <div style="margin-top: 10px; display: flex; gap: 10px;">
-            <select id="charSelect">
-                <option value="black_org">💀 องค์กรชุดดำ</option>
-                <option value="kid">🎩 จอมโจรคิด</option>
-                <option value="shinichi">⚽ คุโด้ ชินอิจิ</option>
-            </select>
-            <button class="btn-main btn-gold" style="width: 100px;" onclick="spinChar()">FILTER</button>
         </div>
 
         <div class="history-card">
             <div class="history-title">
                 <span id="txt-history-title">CASE HISTORY</span> 
-                <span onclick="clearAllHistory()" style="cursor:pointer; opacity:0.5; font-size: 0.7rem;">[ CLEAR ]</span>
+                <span onclick="clearAllHistory()" style="cursor:pointer; color: var(--danger);" id="txt-clear">[ CLEAR ]</span>
             </div>
             <div id="historyList" class="history-list"></div>
         </div>
     </div>
 </div>
 
-<div id="chatBtn" onclick="toggleChat()">🔍</div>
-<div id="chatWindow">
-    <div class="chat-header">ASSISTANT</div>
-    <div class="chat-body" id="chatBody">
-        <div class="msg bot">สวัสดีครับ! ระบบแก้ไขบัคสุ่มซ้ำเรียบร้อยแล้ว</div>
-    </div>
-</div>
-
 <script>
     let currentLang = 'th';
-    const i18n = {
-        th: {
-            title: "กดปุ่มด้านล่างเพื่อเริ่มการสุ่มคดี",
-            ready: "ระบบพร้อมใช้งาน",
-            config: "ตั้งค่าอินเทอร์เฟซ",
-            apply: "ตกลง",
-            btnAll: "สุ่มทุกอย่าง",
-            btnTv: "ทีวีซีรีส์",
-            btnMovie: "เดอะมูฟวี่",
-            btnLupin: "ปะทะ ลูแปงที่ 3",
-            history: "ประวัติการสืบคดี",
-            streaming: "กำลังดึงข้อมูลซีรีส์",
-            theater: "ฉบับพิเศษ / มูฟวี่",
-            character: "หมวดตัวละคร"
-        },
-        en: {
-            title: "Press button to start",
-            ready: "System Ready",
-            config: "INTERFACE CONFIG",
-            apply: "APPLY",
-            btnAll: "RANDOM ALL",
-            btnTv: "TV SERIES",
-            btnMovie: "THE MOVIES",
-            btnLupin: "VS LUPIN III",
-            history: "CASE HISTORY",
-            streaming: "TV STREAMING",
-            theater: "SPECIAL / MOVIE",
-            character: "CHARACTER SPECIAL"
-        }
-    };
+    // ชื่อตอน/มูฟวี่ทั้งหมด
+    const moviePool = ["คดีปริศนาระเบิดระฟ้า", "คดีฆาตกรรมไพ่ปริศนา", "ปริศนาพ่อมดคนสุดท้ายแห่งศตวรรษ", "คดีฆาตกรรมนัยน์ตาปริศนา", "คดีปริศนาเส้นตายสู่สวรรค์", "ปริศนาบนถนนสายมรณะ", "คดีฆาตกรรมแห่งเมืองปริศนา", "มนตราแห่งรัตติกาลสีเงิน", "ยุทธการเหนือห้วงทะเลลึก", "บทเพลงมรณะแด่เหล่าเหล่านักสืบ"];
+    const lupinPool = ["Lupin III vs. Detective Conan (2009)", "Lupin III vs. Detective Conan: The Movie (2013)"];
 
-    const movieNames = ["คดีปริศนาระเบิดระฟ้า", "คดีฆาตกรรมไพ่ปริศนา", "ปริศนาพ่อมดคนสุดท้ายแห่งศตวรรษ", "คดีฆาตกรรมนัยน์ตาปริศนา", "คดีปริศนาเส้นตายสู่สวรรค์", "ปริศนาบนถนนสายมรณะ", "คดีฆาตกรรมแห่งเมืองปริศนา", "มนตราแห่งรัตติกาลสีเงิน", "ยุทธการเหนือห้วงทะเลลึก", "บทเพลงมรณะแด่เหล่าเหล่านักสืบ"];
-
-    const charData = { 
-        black_org: ["ตอนที่ 1 (จุดเริ่มต้น)", "ตอนที่ 459 (ดำปะทะแดงเดือด)", "ตอนที่ 753 (รถด่วนทมิฬ)"],
-        kid: ["ตอนที่ 78 (โคนันปะทะคิด)", "ตอนที่ 386 (มหัศจรรย์กลางเวหา)"],
-        shinichi: ["ตอนที่ 1 (รถไฟเหาะ)", "ตอนที่ 173 (การฟื้นคืนชีพ)"]
-    };
-
-    let history = JSON.parse(localStorage.getItem('conan_norepeat_v3')) || [];
-
-    function toggleLanguage() {
-        currentLang = currentLang === 'th' ? 'en' : 'th';
-        updateLanguageUI();
-    }
-
-    function updateLanguageUI() {
-        const t = i18n[currentLang];
-        document.getElementById('txt-config-title').innerText = t.config;
-        document.getElementById('txt-apply-btn').innerText = t.apply;
-        document.getElementById('txt-btn-all').innerText = t.btnAll;
-        document.getElementById('txt-btn-tv').innerText = t.btnTv;
-        document.getElementById('txt-btn-movie').innerText = t.btnMovie;
-        document.getElementById('txt-btn-lupin').innerText = t.btnLupin;
-        document.getElementById('txt-history-title').innerText = t.history;
-        document.getElementById('badge').innerText = t.ready;
-    }
+    let history = JSON.parse(localStorage.getItem('conan_norepeat_final')) || [];
 
     function isDuplicate(text) {
+        // ลบช่องว่างและ tag ออกก่อนเช็ค
         const cleanTarget = text.replace(/<[^>]*>?/gm, '').trim();
         return history.some(item => item.text.replace(/<[^>]*>?/gm, '').trim() === cleanTarget);
     }
@@ -236,81 +118,59 @@
         document.getElementById('doorSystem').classList.add('active');
         document.getElementById('epDisplay').classList.remove('show');
         document.getElementById('badge').classList.remove('show');
-        setTimeout(() => { fn(); }, 700);
+        setTimeout(() => { fn(); }, 800);
         setTimeout(() => {
             document.getElementById('doorSystem').classList.remove('active');
             document.getElementById('epDisplay').classList.add('show');
             document.getElementById('badge').classList.add('show');
-        }, 1300);
+        }, 1400);
     }
 
-    function updateUI(m, bKey) {
-        document.getElementById('epDisplay').innerHTML = m;
-        document.getElementById('badge').innerHTML = i18n[currentLang][bKey] || bKey;
-    }
-
-    function addH(t) {
-        const cleanText = t.replace(/<[^>]*>?/gm, '').trim();
-        history.unshift({ id: Date.now(), text: cleanText });
-        save();
-    }
-
-    function save() {
-        localStorage.setItem('conan_norepeat_v3', JSON.stringify(history));
-        const l = document.getElementById('historyList');
-        l.innerHTML = history.slice(0, 10).map(h => `<div class="history-item"><span>${h.text}</span><span style="color:var(--danger); cursor:pointer;" onclick="delI(${h.id}, event)">✕</span></div>`).join('');
-    }
-
-    function delI(id, e) { e.stopPropagation(); history = history.filter(h => h.id !== id); save(); }
-    function clearAllHistory() { if(confirm("Clear All?")) { history = []; save(); } }
-
+    // --- ฟังก์ชันสุ่มแบบห้ามซ้ำ (Hard Lock) ---
     function spinSeries() {
         startSpin(() => {
-            let ep = Math.floor(Math.random() * 1100) + 1;
-            let res = `Season ${Math.ceil(ep/52)} Episode ${ep}`;
-            if(isDuplicate(res)) return spinSeries();
-            updateUI(res, "streaming");
-            addH(res);
+            let attempts = 0;
+            let res = "";
+            while(attempts < 100) {
+                let ep = Math.floor(Math.random() * 1100) + 1;
+                res = `Season ${Math.ceil(ep/52)} Episode ${ep}`;
+                if(!isDuplicate(res)) break;
+                attempts++;
+            }
+            
+            if(attempts >= 100) {
+                alert(currentLang === 'th' ? "สุ่มจนครบโควตาแล้ว! กรุณาล้างประวัติ" : "All cases cleared! Please clear history.");
+                return;
+            }
+            
+            updateUI(res, "TV STREAMING");
+            addHistory(res);
         });
     }
 
     function spinMovie() {
         startSpin(() => {
-            let i = Math.floor(Math.random() * movieNames.length);
-            let res = `Movie ${i+1} <span>${movieNames[i]}</span>`;
-            if(isDuplicate(res)) return spinMovie();
-            updateUI(res, "theater");
-            addH(`Movie ${i+1}: ${movieNames[i]}`);
+            // กรองเอาเฉพาะที่ยังไม่เคยสุ่ม
+            let available = moviePool.filter(m => !isDuplicate(`Movie: ${m}`));
+            if(available.length === 0) {
+                alert("สุ่มครบทุกภาคแล้ว!"); return;
+            }
+            let selected = available[Math.floor(Math.random() * available.length)];
+            let display = `Movie <span>${selected}</span>`;
+            updateUI(display, "THEATER EDITION");
+            addHistory(`Movie: ${selected}`);
         });
     }
 
-    /* --- FIXED LUPIN FUNCTION --- */
     function spinLupin() {
         startSpin(() => {
-            const lupinItems = [
-                "Lupin III vs. Detective Conan (2009) <span>Special TV Edition</span>",
-                "Lupin III vs. Detective Conan: The Movie (2013) <span>Theater Edition</span>"
-            ];
-            let res = lupinItems[Math.floor(Math.random() * lupinItems.length)];
-            
-            // Check Duplicate Logic
-            if(isDuplicate(res)) {
-                // ถ้าสุ่มได้อันเดิมและมีในประวัติแล้ว ให้สลับไปอีกอันทันที (เพราะมีแค่ 2 ช้อยส์)
-                res = lupinItems.find(item => item !== res);
+            let available = lupinPool.filter(l => !isDuplicate(l));
+            if(available.length === 0) {
+                alert("สุ่ม Lupin ครบทั้ง 2 ภาคแล้ว!"); return;
             }
-            
-            updateUI(res, "theater");
-            addH(res);
-        });
-    }
-
-    function spinChar() {
-        startSpin(() => {
-            const c = document.getElementById('charSelect').value;
-            const pool = charData[c];
-            let rawRes = pool[Math.floor(Math.random() * pool.length)];
-            updateUI(rawRes, "character");
-            addH(rawRes);
+            let selected = available[Math.floor(Math.random() * available.length)];
+            updateUI(selected, "SPECIAL CROSSOVER");
+            addHistory(selected);
         });
     }
 
@@ -319,13 +179,50 @@
         if (r < 0.4) spinSeries(); else if (r < 0.8) spinMovie(); else spinLupin();
     }
 
-    function toggleUIPanel() { document.getElementById('uiPanel').classList.toggle('active'); }
-    function updateTheme(color) { document.documentElement.style.setProperty('--conan-gold', color); }
-    function closeModal() { document.getElementById('updateModal').style.display = 'none'; }
-    function toggleChat() { const win = document.getElementById('chatWindow'); win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; }
+    // --- UI & Helper ---
+    function updateUI(m, b) {
+        document.getElementById('epDisplay').innerHTML = m;
+        document.getElementById('badge').innerHTML = b;
+    }
 
-    updateLanguageUI();
-    save();
+    function addHistory(t) {
+        const cleanText = t.replace(/<[^>]*>?/gm, '').trim();
+        history.unshift({ id: Date.now(), text: cleanText });
+        save();
+    }
+
+    function save() {
+        localStorage.setItem('conan_norepeat_final', JSON.stringify(history));
+        const l = document.getElementById('historyList');
+        if(history.length === 0) {
+            l.innerHTML = '<div style="text-align:center; opacity:0.3;">NO RECORDS</div>';
+            return;
+        }
+        l.innerHTML = history.map(h => `<div class="history-item"><span>${h.text}</span><span style="color:var(--danger); cursor:pointer;" onclick="delItem(${h.id})">✕</span></div>`).join('');
+    }
+
+    function delItem(id) {
+        history = history.filter(h => h.id !== id);
+        save();
+    }
+
+    function clearAllHistory() {
+        if(confirm("Wipe Database?")) {
+            history = [];
+            save();
+            document.getElementById('epDisplay').innerHTML = "ฐานข้อมูลถูกล้างแล้ว สุ่มใหม่ได้เลย";
+        }
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'th' ? 'en' : 'th';
+        document.getElementById('txt-btn-all').innerText = currentLang === 'th' ? "สุ่มทุกอย่าง" : "RANDOM ALL";
+        document.getElementById('txt-btn-tv').innerText = currentLang === 'th' ? "สุ่มทีวีซีรีส์" : "TV SERIES";
+        document.getElementById('txt-btn-movie').innerText = currentLang === 'th' ? "เดอะมูฟวี่" : "THE MOVIES";
+        document.getElementById('txt-btn-lupin').innerText = currentLang === 'th' ? "ปะทะ ลูแปง" : "VS LUPIN III";
+    }
+
+    save(); // Initial load
 </script>
 </body>
 </html>
