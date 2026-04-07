@@ -1,169 +1,261 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MULTI-VIBE TERMINAL PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zenith Snake: Luxury Edition</title>
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --text-color: #e6edf3;
-            --primary-color: #58a6ff;
-            --dark-color: #bc8cff;
-            --genz-color: #ff7b72;
-            --love-color: #ffa1d2;
-        }
-
+        /* --- CSS SECTION --- */
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0a0a;
+            color: #d4af37;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
             overflow: hidden;
+            touch-action: manipulation;
         }
 
-        .terminal {
-            width: 80%;
-            max-width: 800px;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            padding-bottom: 20px;
+        .container {
+            text-align: center;
+            background: linear-gradient(145deg, #1a1a1a, #000);
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 10px 50px rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            width: 90%;
+            max-width: 450px;
         }
 
-        .terminal-header {
-            background: #21262d;
-            padding: 10px;
-            display: flex;
-            gap: 8px;
-            border-bottom: 1px solid #30363d;
-        }
-
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .red { background: #ff5f56; }
-        .yellow { background: #ffbd2e; }
-        .green { background: #27c93f; }
-
-        .output-area {
-            height: 300px;
-            padding: 20px;
-            overflow-y: auto;
-            font-family: 'Courier New', Courier, monospace;
-            line-height: 1.6;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            padding: 20px;
-            width: 80%;
-            max-width: 800px;
-        }
-
-        button {
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+        h1 {
+            letter-spacing: 4px;
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
             text-transform: uppercase;
         }
 
-        .btn-dark { background: var(--dark-color); color: #000; }
-        .btn-genz { background: var(--genz-color); color: #000; }
-        .btn-love { background: var(--love-color); color: #000; }
-        button:hover { opacity: 0.8; transform: translateY(-2px); }
+        .score-board {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            color: #fff;
+        }
 
-        .line { margin-bottom: 5px; }
-        .prefix { color: #7ee787; margin-right: 10px; }
+        canvas {
+            background-color: #050505;
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: inset 0 0 20px #000;
+            width: 100%;
+            height: auto;
+        }
+
+        .menu-controls {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        button:hover {
+            background: #d4af37;
+            color: #000;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Mobile D-Pad */
+        .mobile-dpad {
+            display: none;
+            margin-top: 25px;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dpad-row {
+            display: flex;
+            gap: 50px;
+        }
+
+        .dpad-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-dpad { display: flex; }
+            h1 { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
 
-    <h2 style="margin-bottom: 20px;">GitHub Multi-Language Vibe Switcher</h2>
-
-    <div class="terminal">
-        <div class="terminal-header">
-            <div class="dot red"></div>
-            <div class="dot yellow"></div>
-            <div class="dot green"></div>
-            <span style="font-size: 12px; margin-left: 10px; opacity: 0.5;">Githud-Terminal.exe</span>
+    <div class="container">
+        <div class="header">
+            <h1>ZENITH SNAKE</h1>
+            <div class="score-board">SCORE: <span id="score">0</span></div>
         </div>
-        <div class="output-area" id="output">
-            <div class="line"><span class="prefix">$</span>พร้อมใช้งาน... กรุณาเลือกภาษาที่ต้องการ</div>
-        </div>
-    </div>
 
-    <div class="controls">
-        <button class="btn-dark" onclick="runDark()">🔮 ภาษาเบียว</button>
-        <button class="btn-genz" onclick="runGenZ()">💅 Gen Z / Alpha</button>
-        <button class="btn-love" onclick="runLove()">💖 ภาษาหวาน</button>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+        <div class="menu-controls">
+            <button id="startBtn">PLAY</button>
+            <button id="pauseBtn">PAUSE</button>
+            <button id="stopBtn">STOP</button>
+            <button onclick="location.reload()">EXIT</button>
+        </div>
+
+        <div class="mobile-dpad">
+            <button class="dpad-btn" onclick="changeDir('UP')">▲</button>
+            <div class="dpad-row">
+                <button class="dpad-btn" onclick="changeDir('LEFT')">◀</button>
+                <button class="dpad-btn" onclick="changeDir('RIGHT')">▶</button>
+            </div>
+            <button class="dpad-btn" onclick="changeDir('DOWN')">▼</button>
+        </div>
     </div>
 
     <script>
-        const output = document.getElementById('output');
+        /* --- JAVASCRIPT SECTION --- */
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreElem = document.getElementById("score");
+        
+        let snake, food, dx, dy, score, gameInterval;
+        let isPaused = false;
+        const gridSize = 20;
 
-        function print(text, color = '#e6edf3') {
-            const line = document.createElement('div');
-            line.className = 'line';
-            line.innerHTML = `<span class="prefix">>></span><span style="color: ${color}">${text}</span>`;
-            output.appendChild(line);
-            output.scrollTop = output.scrollHeight;
+        function initGame() {
+            snake = [{x: 200, y: 200}, {x: 180, y: 200}, {x: 160, y: 200}];
+            dx = gridSize;
+            dy = 0;
+            score = 0;
+            isPaused = false;
+            scoreElem.innerText = score;
+            createFood();
         }
 
-        // 1. ภาษาเบียว (Chuunibyou)
-        function runDark() {
-            output.innerHTML = '';
-            print("จงตื่นขึ้น! ขุมพลังแห่งบรรพกาล...", "#bc8cff");
-            setTimeout(() => {
-                print("สลักอาคมลงบน Mainframe... [SUCCESS]", "#bc8cff");
-                print("// ผนึกโลหิต: ตรวจสอบความบริสุทธิ์ของวิญญาณ");
-                print("if (พลังเวทย์ > 9000) {");
-                print("   เปิดประตูมิติสู่ Root Directory;");
-                print("} else {");
-                print("   จงมอดไหม้ใน Error 404!!;");
-                print("}");
-            }, 500);
+        function startGame() {
+            if (gameInterval) clearInterval(gameInterval);
+            initGame();
+            gameInterval = setInterval(update, 120);
         }
 
-        // 2. Gen Z / Gen Alpha
-        function runGenZ() {
-            output.innerHTML = '';
-            print("Vibe Check กำลังทำงานแบบฉ่ำๆ...", "#ff7b72");
-            setTimeout(() => {
-                print("Deploy โค้ดตัวแม่ แบบสับ! No Cap", "#ff7b72");
-                print("// สภาพ! ถ้าบัคคือตุ๊บนะวิ");
-                print("const aura = checkRizz(user);");
-                print("if (aura === 'ตัวมารดา') {");
-                print("   Slay แบบตัวมัม!;");
-                print("} else {");
-                print("   ไปพักก่อนนะ Skibidi!;");
-                print("}");
-            }, 500);
+        function update() {
+            if (isPaused) return;
+            if (checkGameOver()) {
+                clearInterval(gameInterval);
+                alert("GAME OVER! SCORE: " + score);
+                return;
+            }
+
+            clearCanvas();
+            drawFood();
+            moveSnake();
+            drawSnake();
         }
 
-        // 3. ภาษาหวาน (Couple)
-        function runLove() {
-            output.innerHTML = '';
-            print("กำลังส่งความคิดถึงผ่านสาย LAN...", "#ffa1d2");
-            setTimeout(() => {
-                print("เชื่อมต่อหัวใจสองดวงเข้าด้วยกัน... [COMPLETE]", "#ffa1d2");
-                print("// เพราะทุกบรรทัดคือความคิดถึง");
-                print("while (เรายังมีกันและกัน) {");
-                print("   ความสุข++;");
-                print("   return 'รักเตงที่สุดในโลก';");
-                print("}");
-                print("/* บัคเดียวที่ยอมคือ บัคที่รัก (รักที่เบ้อ) */");
-            }, 500);
+        function clearCanvas() {
+            ctx.fillStyle = "#050505";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
+
+        function drawSnake() {
+            snake.forEach((part, index) => {
+                ctx.fillStyle = index === 0 ? "#d4af37" : "rgba(212, 175, 55, 0.6)";
+                ctx.strokeStyle = "#000";
+                ctx.beginPath();
+                ctx.roundRect(part.x, part.y, gridSize-2, gridSize-2, 4);
+                ctx.fill();
+                ctx.stroke();
+            });
+        }
+
+        function moveSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            snake.unshift(head);
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                scoreElem.innerText = score;
+                createFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function createFood() {
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
+            };
+        }
+
+        function drawFood() {
+            ctx.fillStyle = "#ff3e3e";
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#ff3e3e";
+            ctx.beginPath();
+            ctx.arc(food.x + 10, food.y + 10, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function checkGameOver() {
+            const head = snake[0];
+            const hitWall = head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height;
+            const hitSelf = snake.slice(1).some(part => part.x === head.x && part.y === head.y);
+            return hitWall || hitSelf;
+        }
+
+        function changeDir(dir) {
+            if (dir === 'UP' && dy === 0) { dx = 0; dy = -gridSize; }
+            if (dir === 'DOWN' && dy === 0) { dx = 0; dy = gridSize; }
+            if (dir === 'LEFT' && dx === 0) { dx = -gridSize; dy = 0; }
+            if (dir === 'RIGHT' && dx === 0) { dx = gridSize; dy = 0; }
+        }
+
+        // Event Listeners
+        document.getElementById("startBtn").onclick = startGame;
+        document.getElementById("pauseBtn").onclick = () => isPaused = !isPaused;
+        document.getElementById("stopBtn").onclick = () => clearInterval(gameInterval);
+
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp" || e.key === "w") changeDir("UP");
+            if (e.key === "ArrowDown" || e.key === "s") changeDir("DOWN");
+            if (e.key === "ArrowLeft" || e.key === "a") changeDir("LEFT");
+            if (e.key === "ArrowRight" || e.key === "d") changeDir("RIGHT");
+        });
+
+        initGame();
+        drawSnake(); // Draw initial snake
     </script>
 </body>
 </html>
