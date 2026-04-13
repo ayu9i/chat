@@ -3,483 +3,503 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DETECTIVE CONAN: PROJECT GENESIS 💣</title>
+    <title>CONAN OMEGA: THE 1000+ EDITION</title>
+    
     <style>
+        /* [CSS SECTION: VISUAL ARCHITECTURE]
+           ส่วนนี้เราใช้จัดการหน้าตา และ Animation ที่ซับซ้อน
+        */
         :root {
             --danger: #ff0000;
             --success: #00ff00;
             --gold: #ffd700;
-            --bg: #030303;
+            --bg: #010101;
+            --panel: #0d0d0d;
             --neon-blue: #00f2ff;
-            --wire-shadow: rgba(0,0,0,0.7);
+            --wire-shadow: rgba(0,0,0,0.9);
+            --border-glow: rgba(0, 242, 255, 0.3);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            background-color: var(--bg);
-            color: #fff;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif; 
         }
 
-        /* Container & Layout */
-        #main-frame {
-            background: #111;
-            border: 5px solid #333;
+        body { 
+            background-color: var(--bg); 
+            color: #ffffff; 
+            margin: 0; 
+            overflow: hidden; 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        /* [ANIMATION: BACKGROUND MATRIX FLOW] */
+        #bg-canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -1; 
+            opacity: 0.2; 
+        }
+
+        /* [LAYOUT: MAIN DEVICE FRAME] */
+        #app-frame {
+            background: var(--panel);
+            border: 4px solid #222;
             border-radius: 25px;
-            padding: 20px;
+            padding: 25px;
             width: 95%;
             max-width: 500px;
             position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 20px rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 15px var(--border-glow);
+            z-index: 10;
+            transition: transform 0.1s ease;
         }
 
-        /* Header Info */
-        .status-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: var(--neon-blue);
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        /* [UI: HEADER & NETWORK STATUS] */
+        .status-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.7rem; 
+            color: var(--neon-blue); 
+            margin-bottom: 15px; 
+            border-bottom: 1px solid #333; 
+            padding-bottom: 8px; 
+            font-family: 'Courier New', monospace;
         }
 
-        /* Digital Display */
+        /* [UI: DIGITAL TIMER DISPLAY] */
         .display-unit {
             background: #000;
-            border: 2px solid #222;
+            border: 2px solid #333;
             padding: 20px;
-            border-radius: 12px;
+            border-radius: 15px;
             margin-bottom: 25px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .display-unit::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 2px);
-            pointer-events: none;
-        }
-
-        .timer-text {
-            font-size: 4rem;
-            color: var(--danger);
-            text-shadow: 0 0 20px var(--danger);
-            font-weight: 900;
-            margin: 0;
-            font-family: 'Orbitron', sans-serif; /* Fallback to monospace */
-        }
-
-        .progress-sub {
-            color: var(--gold);
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        /* Wire System */
-        .circuit-board {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-            padding: 10px;
-            background: #1a1a1a;
-            border-radius: 10px;
-            border: 1px solid #333;
-        }
-
-        .wire-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            box-shadow: inset 0 0 20px rgba(255,0,0,0.15);
             position: relative;
         }
 
-        .wire-node {
+        .timer-val { 
+            font-size: 4rem; 
+            color: var(--danger); 
+            text-shadow: 0 0 25px var(--danger); 
+            font-weight: bold; 
+            margin: 0; 
+            font-family: 'Orbitron', 'Courier New', monospace;
+        }
+
+        /* [UI: WIRE SYSTEM] */
+        .wire-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 15px; 
+            margin-bottom: 25px; 
+        }
+
+        .wire { 
+            height: 95px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            position: relative; 
+            overflow: hidden; 
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: inset -6px 0 12px var(--wire-shadow); 
+        }
+
+        .wire::after {
+            content: ""; 
+            position: absolute; 
+            top: -100%; 
+            left: 0; 
+            width: 100%; 
+            height: 40%;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent); 
+            animation: flow 1s linear infinite;
+        }
+
+        @keyframes flow { from { top: -100%; } to { top: 100%; } }
+
+        .wire.cut { 
+            height: 25px; 
+            background: #111 !important; 
+            opacity: 0.4; 
+            transform: translateY(20px); 
+            box-shadow: none; 
+            cursor: default; 
+        }
+
+        /* [UI: BUTTONS & INTERACTABLES] */
+        .btn-group { display: flex; gap: 10px; }
+        
+        button.action {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            color: #fff;
+            border: 1px solid #444;
+            padding: 15px;
             width: 100%;
-            height: 90px;
-            border-radius: 6px;
+            border-radius: 12px;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.1s, height 0.4s;
-            box-shadow: inset -5px 0 10px var(--wire-shadow);
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
         }
 
-        .wire-node::after {
-            content: "";
-            position: absolute;
-            top: -100%;
-            left: 0;
+        button.action:hover { 
+            border-color: var(--neon-blue); 
+            box-shadow: 0 0 15px var(--border-glow); 
+        }
+
+        button.danger { 
+            background: linear-gradient(145deg, #ff0000, #990000); 
+            border: none; 
+            color: white; 
+        }
+
+        /* [LOCK SCREEN & OVERLAYS] */
+        .modal {
+            display: none; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.98); 
+            z-index: 100; 
+            border-radius: 20px; 
+            padding: 30px;
+            border: 2px solid var(--neon-blue); 
+            overflow-y: auto;
+        }
+
+        /* [SYSTEM RECOVERY INPUT] */
+        #recover-key {
+            background: #000;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
             width: 100%;
-            height: 50%;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4), transparent);
-            animation: flow-light 1s linear infinite;
+            text-align: center;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 20px;
         }
 
-        @keyframes flow-light {
-            0% { top: -100%; }
-            100% { top: 100%; }
-        }
-
-        .wire-node.cut {
-            height: 25px;
-            background: #111 !important;
-            box-shadow: none;
-            cursor: default;
-            opacity: 0.3;
-            transform: translateY(15px);
-        }
-
-        .wire-node.cut::after { display: none; }
-
-        /* Control Panel */
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        /* [LANG & DIFFICULTY SELECTORS] */
+        .selector-box {
+            display: flex;
+            justify-content: center;
             gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .btn {
+        .sel-btn {
             background: #222;
             border: 1px solid #444;
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
+            color: #888;
+            padding: 8px 15px;
+            border-radius: 6px;
             cursor: pointer;
-            font-family: inherit;
-            transition: 0.2s;
-            text-transform: uppercase;
             font-size: 0.8rem;
         }
 
-        .btn:hover { background: #333; border-color: var(--neon-blue); }
-        .btn-danger { color: var(--danger); border-color: var(--danger); }
-
-        /* Screens */
-        .view-panel { display: none; }
-        .view-panel.active { display: block; }
-
-        /* Setup Screen Spacing */
-        .setup-group { margin-bottom: 20px; text-align: center; }
-        .diff-selector { display: flex; justify-content: center; gap: 5px; }
-        .diff-btn { 
-            padding: 8px 12px; background: #000; border: 1px solid #444; color: #888; border-radius: 4px; cursor: pointer;
-        }
-        .diff-btn.selected { border-color: var(--gold); color: var(--gold); background: #222; }
-
-        /* Modal Overlay */
-        #overlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,10,0,0.95);
-            z-index: 100;
-            padding: 20px;
-            border-radius: 20px;
-            overflow-y: auto;
-            border: 2px solid var(--success);
+        .sel-btn.active {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: #333;
         }
 
-        /* Lock Screen Animation */
-        .shake { animation: screen-shake 0.1s infinite; }
-        @keyframes screen-shake {
-            0% { transform: translate(1px, 1px); }
-            50% { transform: translate(-1px, -2px); }
-            100% { transform: translate(1px, 2px); }
+        /* [EFFECTS: SHAKE & PARTICLES] */
+        .shake { animation: shake-screen 0.1s infinite; }
+        @keyframes shake-shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            50% { transform: translate(-1px, -2px) rotate(-1deg); }
+            100% { transform: translate(1px, 2px) rotate(1deg); }
         }
-
-        /* Score Table */
-        .score-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
-        .score-table td { padding: 8px; border-bottom: 1px solid #003300; }
-        .highlight { color: var(--gold); }
-
-        /* Colors for 10 wires */
-        .w0 { background: #e74c3c; } .w1 { background: #3498db; }
-        .w2 { background: #2ecc71; } .w3 { background: #f1c40f; }
-        .w4 { background: #9b59b6; } .w5 { background: #e67e22; }
-        .w6 { background: #ecf0f1; } .w7 { background: #7f8c8d; }
-        .w8 { background: #1abc9c; } .w9 { background: #d35400; }
     </style>
 </head>
 <body>
 
-    <div id="main-frame">
-        <div class="status-header">
-            <span id="ping-display">PING: 24ms</span>
-            <span id="conn-type">SECURE-LINK: AES-256</span>
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="app-frame">
+        <div class="status-bar">
+            <span id="ping-stat">SIGNAL: CONNECTED</span>
+            <span id="enc-stat">ENC: OMEGA-256</span>
         </div>
 
-        <div id="view-setup" class="view-panel active">
+        <div class="selector-box" id="lang-switch">
+            <button class="sel-btn" onclick="game.setLang('th')">THAI</button>
+            <button class="sel-btn active" onclick="game.setLang('en')">ENGLISH</button>
+            <button class="sel-btn" onclick="game.setLang('jp')">JAPANESE</button>
+        </div>
+
+        <div id="view-setup" class="page active">
             <div class="display-unit">
-                <h2 style="color:var(--gold); margin:0;">BOMB DESIGNER</h2>
-                <p style="font-size:0.7rem; color:#555;">SPECIFY PARAMETERS BEFORE ARMING</p>
+                <h2 id="txt-title" style="color:var(--gold); margin:0;">BOMB SYSTEM</h2>
+                <p id="txt-subtitle" style="font-size:0.7rem; color:#666;">AUTHORIZATION REQUIRED</p>
             </div>
             
-            <div class="setup-group">
-                <label>DIFFICULTY LEVEL</label>
-                <div class="diff-selector">
-                    <button class="diff-btn" onclick="app.setDifficulty(1, this)">EASY</button>
-                    <button class="diff-btn selected" onclick="app.setDifficulty(1.8, this)">NORMAL</button>
-                    <button class="diff-btn" onclick="app.setDifficulty(3.5, this)">HARD</button>
+            <p id="txt-diff-label" style="text-align:center; font-size:0.8rem; margin-bottom:10px;">LEVEL:</p>
+            <div class="selector-box">
+                <button class="sel-btn" id="d1" onclick="game.setDiff(1.0, 'd1')">EASY</button>
+                <button class="sel-btn active" id="d2" onclick="game.setDiff(1.8, 'd2')">NORMAL</button>
+                <button class="sel-btn" id="d3" onclick="game.setDiff(3.5, 'd3')">HARD</button>
+            </div>
+
+            <button class="action danger" onclick="game.initGame()" id="txt-btn-start">ARM DEVICE</button>
+        </div>
+
+        <div id="view-mission" class="page" style="display:none;">
+            <div class="display-unit">
+                <p class="timer-val" id="timer-display">00:30</p>
+                <p id="txt-progress" style="color:var(--gold); font-size:0.8rem; margin:10px 0;">WIRES: 0 / 10</p>
+            </div>
+            
+            <div class="wire-grid" id="wire-container">
                 </div>
-            </div>
 
-            <div class="setup-group">
-                <label>TIMER (SEC): </label>
-                <input type="number" id="input-timer" value="30" min="5" max="999" 
-                       style="background:#000; color:var(--gold); border:1px solid #444; padding:8px; width:80px; text-align:center;">
+            <div class="btn-group">
+                <button class="action" onclick="game.openModal('manual')" id="txt-btn-manual">MANUAL</button>
+                <button class="action" onclick="game.openModal('stats')" id="txt-btn-stats">LOGS</button>
             </div>
-
-            <button class="btn btn-danger" onclick="app.armDevice()" 
-                    style="width:100%; padding:15px; font-weight:bold; font-size:1.1rem;">ARM SYSTEM</button>
         </div>
 
-        <div id="view-mission" class="view-panel">
+        <div id="view-lock" class="page" style="display:none; text-align:center;">
             <div class="display-unit">
-                <p class="timer-text" id="main-timer">00:00</p>
-                <div class="progress-sub" id="progress-text">PROGRESS: 0 / 10</div>
+                <h1 id="lock-status" style="font-size:3rem; margin:0;"></h1>
             </div>
-
-            <div class="circuit-board" id="wire-grid"></div>
-
-            <div class="controls">
-                <button class="btn" onclick="app.showModal('schematic')">Schematic</button>
-                <button class="btn" onclick="app.showModal('leaderboard')">Ranking</button>
-            </div>
+            <p id="txt-lock-msg" style="color:#888; margin-bottom:20px;">SYSTEM HAS BEEN PERMANENTLY LOCKED</p>
+            <input type="text" id="recover-key" placeholder="RECOVERY CODE">
+            <button class="action danger" onclick="game.rebootSystem()" id="txt-btn-reboot">RESTORE SYSTEM</button>
         </div>
 
-        <div id="view-lock" class="view-panel" style="text-align:center;">
-            <div class="display-unit">
-                <h1 id="lock-title" style="margin:0; font-size:3rem;"></h1>
-                <p id="lock-msg" style="color:#666; font-size:0.8rem;"></p>
-            </div>
-            <input type="text" id="recovery-input" placeholder="ENTER RECOVERY KEY" 
-                   style="background:#000; color:red; border:2px solid red; padding:15px; width:100%; text-align:center; margin-bottom:20px; font-family:inherit;">
-            <button class="btn btn-danger" onclick="app.reboot()" style="width:100%;">SYSTEM REBOOT</button>
-        </div>
-
-        <div id="overlay">
-            <div id="modal-body"></div>
-            <button class="btn" onclick="app.hideModal()" style="width:100%; margin-top:20px;">BACK TO DEVICE</button>
+        <div id="modal" class="modal">
+            <div id="modal-content" style="line-height: 1.6;"></div>
+            <button class="action" onclick="game.closeModal()" id="txt-btn-close" style="margin-top:30px;">DISMISS</button>
         </div>
     </div>
 
     <script>
-        /**
-         * THE OMEGA BOMB ENGINE
-         * Encapsulated to prevent external tampering
-         */
-        const app = (() => {
-            // Configuration & State
-            const CONFIG = {
-                RECOVERY_CODE: "gurabud",
-                STORAGE_KEY: "conan_v_final_lock",
-                WIRE_NAMES: ["Red", "Blue", "Green", "Yellow", "Purple", "Orange", "White", "Dark Grey", "Mint", "Brown"]
+        /*
+           [SCRIPT SECTION: THE OMEGA ENGINE]
+           นี่คือสมองของระบบ จัดการทั้ง Logic, Sound, Animation และ Localization
+        */
+        const game = (() => {
+            
+            // [1] DATABASE: LOCALIZATION
+            const langPack = {
+                th: {
+                    title: "ระบบระเบิดโคนัน", sub: "กรุณายืนยันสิทธิ์เข้าถึง", diff: "ระดับความตึง:",
+                    start: "เปิดใช้งานระเบิด", manual: "คู่มือการกู้", stats: "ประวัติการกู้",
+                    prog: "สายไฟที่ตัดแล้ว: ", reboot: "คืนค่าระบบ", close: "ปิดหน้าต่าง",
+                    boom: "ตูมมม! 💥", clear: "ปลอดภัย! 🎖️", error: "รหัสกู้คืนไม่ถูกต้อง!",
+                    log_title: "ประวัติภารกิจ", manual_title: "วิเคราะห์วงจร",
+                    wires: ["แดง", "น้ำเงิน", "เขียว", "เหลือง", "ม่วง", "ส้ม", "ขาว", "เทาดำ", "เขียวมินต์", "แสด"]
+                },
+                en: {
+                    title: "CONAN BOMB OMEGA", sub: "AUTHORIZATION REQUIRED", diff: "DIFFICULTY:",
+                    start: "ARM DEVICE", manual: "MANUAL", stats: "MISSION LOGS",
+                    prog: "WIRES DEFUSED: ", reboot: "RESTORE SYSTEM", close: "DISMISS",
+                    boom: "BOOM! 💥", clear: "CLEAR! 🎖️", error: "INVALID RECOVERY KEY!",
+                    log_title: "MISSION HISTORY", manual_title: "CIRCUIT ANALYSIS",
+                    wires: ["Red", "Blue", "Green", "Yellow", "Purple", "Orange", "White", "Slate", "Mint", "Amber"]
+                },
+                jp: {
+                    title: "コナン爆弾システム", sub: "承認が必要です", diff: "難易度:",
+                    start: "爆弾を作動させる", manual: "マニュアル", stats: "履歴",
+                    prog: "解除された線: ", reboot: "システム復旧", close: "閉じる",
+                    boom: "ドカーン! 💥", clear: "解除成功! 🎖️", error: "コードが正しくありません!",
+                    log_title: "ミッション履歴", manual_title: "回路分析",
+                    wires: ["赤", "青", "緑", "黄", "紫", "橙", "白", "灰色", "ミント", "琥珀色"]
+                }
             };
 
+            // [2] STATE MANAGEMENT
+            let currentLang = 'en';
             let state = {
+                active: false,
                 sequence: [],
-                currentStep: 0,
+                step: 0,
                 timeLeft: 30,
                 difficulty: 1.8,
-                timerId: null,
-                isGameOver: false
+                timer: null,
+                history: []
             };
 
+            // [3] AUDIO ENGINE
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-            // Private Utilities
-            const playSound = (freq, dur, type = 'square') => {
+            const playSound = (freq, dur, type = 'sine') => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = type;
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
                 osc.frequency.value = freq;
                 gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur/1000);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + dur/1000);
+                setTimeout(() => osc.stop(), dur);
             };
 
-            const vibrate = (ms) => {
-                if (navigator.vibrate) navigator.vibrate(ms);
-            };
-
-            const updatePing = () => {
-                const ping = Math.floor(Math.random() * 40) + 15;
-                document.getElementById('ping-display').innerText = `PING: ${ping}ms`;
-                document.getElementById('ping-display').style.color = ping > 45 ? 'var(--danger)' : 'var(--neon-blue)';
-            };
-
-            // Public Interface
+            // [4] CORE FUNCTIONS
             return {
-                init: () => {
-                    setInterval(updatePing, 2000);
-                    const savedState = localStorage.getItem(CONFIG.STORAGE_KEY);
-                    if (savedState) {
-                        app.renderLock(savedState);
-                    }
+                setLang: (lang) => {
+                    currentLang = lang;
+                    document.querySelectorAll('#lang-switch button').forEach(b => {
+                        b.classList.toggle('active', b.innerText.toLowerCase().includes(lang));
+                    });
+                    game.updateUI();
                 },
 
-                setDifficulty: (val, el) => {
+                updateUI: () => {
+                    const l = langPack[currentLang];
+                    document.getElementById('txt-title').innerText = l.title;
+                    document.getElementById('txt-subtitle').innerText = l.sub;
+                    document.getElementById('txt-diff-label').innerText = l.diff;
+                    document.getElementById('txt-btn-start').innerText = l.start;
+                    document.getElementById('txt-btn-manual').innerText = l.manual;
+                    document.getElementById('txt-btn-stats').innerText = l.stats;
+                    document.getElementById('txt-btn-reboot').innerText = l.reboot;
+                    document.getElementById('txt-btn-close').innerText = l.close;
+                    document.getElementById('txt-progress').innerText = l.prog + state.step + " / 10";
+                },
+
+                setDiff: (val, btnId) => {
                     state.difficulty = val;
-                    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
-                    el.classList.add('selected');
+                    document.querySelectorAll('.page button').forEach(b => b.classList.remove('active'));
+                    document.getElementById(btnId).classList.add('active');
                     playSound(440, 50);
                 },
 
-                armDevice: () => {
-                    state.timeLeft = parseInt(document.getElementById('input-timer').value) || 30;
+                initGame: () => {
+                    state.active = true;
+                    state.step = 0;
+                    state.timeLeft = 30;
                     state.sequence = Array.from({length: 10}, (_, i) => i).sort(() => Math.random() - 0.5);
-                    state.currentStep = 0;
-                    state.isGameOver = false;
-
-                    // Transition to Mission
-                    document.getElementById('view-setup').classList.remove('active');
-                    document.getElementById('view-mission').classList.add('active');
-
-                    // Render Wires
-                    const grid = document.getElementById('wire-grid');
-                    grid.innerHTML = "";
+                    
+                    document.getElementById('view-setup').style.display = 'none';
+                    document.getElementById('view-mission').style.display = 'block';
+                    
+                    const container = document.getElementById('wire-container');
+                    container.innerHTML = "";
                     for(let i=0; i<10; i++) {
-                        grid.innerHTML += `<div class="wire-container"><div class="wire-node w${i}" id="wire-${i}" onclick="app.cutWire(${i})"></div></div>`;
+                        container.innerHTML += `<div class="wire w${i}" id="wire-${i}" onclick="game.cutWire(${i})"></div>`;
                     }
-
-                    app.startCountdown();
-                    playSound(880, 200, 'sine');
-                },
-
-                startCountdown: () => {
-                    state.timerId = setInterval(() => {
+                    
+                    state.timer = setInterval(() => {
                         state.timeLeft -= (0.1 * state.difficulty);
-                        const sec = Math.max(0, Math.ceil(state.timeLeft));
-                        const display = document.getElementById('main-timer');
-                        display.innerText = `00:${sec < 10 ? '0'+sec : sec}`;
-
-                        if (sec <= 5) {
-                            document.getElementById('main-frame').classList.add('shake');
-                            playSound(1200, 50);
-                        } else {
-                            if (Math.floor(state.timeLeft * 10) % 10 === 0) playSound(600, 20);
+                        const s = Math.max(0, Math.ceil(state.timeLeft));
+                        document.getElementById('timer-display').innerText = `00:${s < 10 ? '0'+s : s}`;
+                        
+                        if(s <= 5) {
+                            document.getElementById('app-frame').classList.add('shake');
+                            playSound(1200, 30, 'square');
                         }
 
-                        if (state.timeLeft <= 0) app.endMission('dead');
+                        if(state.timeLeft <= 0) game.endGame('dead');
                     }, 100);
+                    
+                    game.updateUI();
                 },
 
                 cutWire: (id) => {
-                    if (state.isGameOver) return;
                     const el = document.getElementById(`wire-${id}`);
-                    if (el.classList.contains('cut')) return;
-
-                    vibrate(50);
-                    if (id === state.sequence[state.currentStep]) {
+                    if(el.classList.contains('cut') || !state.active) return;
+                    
+                    if(id === state.sequence[state.step]) {
                         el.classList.add('cut');
-                        state.currentStep++;
-                        document.getElementById('progress-text').innerText = `PROGRESS: ${state.currentStep} / 10`;
-                        playSound(1500, 80);
-                        if (state.currentStep === 10) app.endMission('won');
+                        state.step++;
+                        playSound(800, 100);
+                        game.updateUI();
+                        if(state.step === 10) game.endGame('won');
                     } else {
-                        app.endMission('dead');
+                        game.endGame('dead');
                     }
                 },
 
-                endMission: (result) => {
-                    state.isGameOver = true;
-                    clearInterval(state.timerId);
-                    document.getElementById('main-frame').classList.remove('shake');
-                    localStorage.setItem(CONFIG.STORAGE_KEY, result);
+                endGame: (result) => {
+                    state.active = false;
+                    clearInterval(state.timer);
+                    document.getElementById('app-frame').classList.remove('shake');
                     
-                    if (result === 'dead') {
-                        vibrate([500, 100, 500]);
-                        playSound(100, 1000, 'sawtooth');
-                    } else {
-                        playSound(2000, 500, 'sine');
-                    }
-                    
-                    setTimeout(() => app.renderLock(result), 500);
+                    localStorage.setItem('conan_state', result);
+                    game.showLockView(result);
                 },
 
-                renderLock: (result) => {
-                    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-                    document.getElementById('view-lock').classList.add('active');
+                showLockView: (res) => {
+                    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                    document.getElementById('view-lock').style.display = 'block';
                     
-                    const title = document.getElementById('lock-title');
-                    const msg = document.getElementById('lock-msg');
-                    
-                    if (result === 'dead') {
-                        title.innerText = "BOOM! 💥";
-                        title.style.color = "var(--danger)";
-                        msg.innerText = "CRITICAL ERROR: DETONATION TRIGGERED. SYSTEM WIPED.";
-                        document.body.style.backgroundColor = "#200";
-                    } else {
-                        title.innerText = "SECURED 🎖️";
-                        title.style.color = "var(--success)";
-                        msg.innerText = "ALL NODES DEACTIVATED. POLICE EN ROUTE.";
-                        document.body.style.backgroundColor = "#002";
-                    }
+                    const status = document.getElementById('lock-status');
+                    status.innerText = res === 'dead' ? langPack[currentLang].boom : langPack[currentLang].clear;
+                    status.style.color = res === 'dead' ? 'red' : 'lime';
                 },
 
-                showModal: (type) => {
-                    const overlay = document.getElementById('overlay');
-                    const body = document.getElementById('modal-body');
-                    overlay.style.display = 'block';
-
-                    if (type === 'schematic') {
-                        body.innerHTML = `
-                            <h2 style="color:var(--neon-blue)">[ CIRCUIT SCHEMATIC ]</h2>
-                            <p style="font-size:0.7rem;">LOGICAL FLOW DETECTED:</p>
-                            <div style="background:#000; padding:15px; border:1px dashed var(--success); color:var(--success); font-family:monospace;">
-                                ${state.sequence.map((w, i) => `STEP_${i+1}: NODE_${w} (${CONFIG.WIRE_NAMES[w]})`).join('<br>')}
-                            </div>
-                            <p style="color:#555; font-size:0.6rem; margin-top:10px;">NOTE: ANY DEVIATION CAUSES DETONATION.</p>
-                        `;
+                openModal: (type) => {
+                    const modal = document.getElementById('modal');
+                    const content = document.getElementById('modal-content');
+                    modal.style.display = 'block';
+                    
+                    if(type === 'manual') {
+                        content.innerHTML = `<h3>[ ${langPack[currentLang].manual_title} ]</h3>
+                        <p>SEQUENCE ANALYSIS:</p>
+                        <p style="color:var(--neon-blue); font-weight:bold;">
+                        ${state.sequence.map(idx => langPack[currentLang].wires[idx]).join(' > ')}
+                        </p>`;
                     } else {
-                        body.innerHTML = `
-                            <h2 style="color:var(--gold)">🏆 TOP DEFUSERS</h2>
-                            <table class="score-table">
-                                <tr class="highlight"><td>1. Kudo Shinichi</td><td>00:04.2s</td></tr>
-                                <tr><td>2. Kaitou Kid</td><td>00:05.1s</td></tr>
-                                <tr><td>3. Akai Shuichi</td><td>00:08.4s</td></tr>
-                                <tr><td>4. Amuro Tooru</td><td>00:10.0s</td></tr>
-                                <tr class="highlight"><td>5. YOU</td><td>--:--</td></tr>
-                            </table>
-                        `;
+                        content.innerHTML = `<h3>[ ${langPack[currentLang].log_title} ]</h3>
+                        <p>ID: #4869-APTX<br>STATUS: ENCRYPTED<br>RANK: DETECTIVE</p>`;
                     }
                 },
 
-                hideModal: () => {
-                    document.getElementById('overlay').style.display = 'none';
-                },
+                closeModal: () => document.getElementById('modal').style.display = 'none',
 
-                reboot: () => {
-                    const input = document.getElementById('recovery-input').value.toLowerCase();
-                    if (input === CONFIG.RECOVERY_CODE) {
-                        localStorage.removeItem(CONFIG.STORAGE_KEY);
+                rebootSystem: () => {
+                    if(document.getElementById('recover-key').value.toLowerCase() === 'gurabud') {
+                        localStorage.removeItem('conan_state');
                         location.reload();
                     } else {
-                        vibrate(200);
-                        alert("ACCESS DENIED: INVALID SECURITY KEY");
+                        alert(langPack[currentLang].error);
+                        playSound(100, 500, 'sawtooth');
                     }
                 }
             };
         })();
 
-        // Start Application
-        window.onload = app.init;
+        // [5] MATRIX BACKGROUND SIMULATION
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const columns = Math.floor(canvas.width / 20);
+        const drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = '15px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = String.fromCharCode(Math.random() * 128);
+                ctx.fillText(text, i * 20, drops[i] * 20);
+                if(drops[i] * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        // [6] INITIALIZATION
+        window.onload = () => {
+            const saved = localStorage.getItem('conan_state');
+            if(saved) game.showLockView(saved);
+            game.setLang('en');
+        };
     </script>
 </body>
 </html>
