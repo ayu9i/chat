@@ -3,141 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONAN BOMB CASE: THE FINAL COUNTDOWN 💣</title>
+    <title>CONAN: 10-WIRE SEQUENCE 💣</title>
     <style>
-        :root {
-            --danger: #ff4d4d;
-            --success: #2ecc71;
-            --bg: #050505;
-            --panel: #1a1a1a;
-            --gold: #f1c40f;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: #ecf0f1;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        #app-container {
-            background: var(--panel);
-            padding: 30px;
-            border: 4px solid #333;
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 20px rgba(255,0,0,0.2);
-            width: 90%;
-            max-width: 450px;
-            position: relative;
-        }
-
-        .digital-screen {
-            background: #000;
-            border: 2px solid #444;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-        }
-
-        .timer {
-            font-size: 3rem;
-            color: var(--danger);
-            text-shadow: 0 0 15px var(--danger);
-            margin: 0;
-            font-weight: bold;
-        }
-
-        .wire-box {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .wire {
-            width: 100%;
-            height: 80px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-            box-shadow: inset -4px 0 6px rgba(0,0,0,0.4);
-        }
-
-        .wire:hover {
-            transform: scale(1.05);
-            filter: brightness(1.3);
-        }
-
-        .wire.cut {
-            height: 30px;
-            background: #111 !important;
-            cursor: default;
-            box-shadow: none;
-        }
-
-        /* ปุ่มและอินพุต */
-        button {
-            background: #333;
-            color: #fff;
-            border: 1px solid #555;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        button.primary {
-            background: var(--success);
-            color: #000;
-            font-weight: bold;
-            border: none;
-        }
-
-        input {
-            background: #000;
-            border: 1px solid var(--success);
-            color: var(--success);
-            padding: 12px;
-            border-radius: 5px;
-            width: 80%;
-            text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-        }
-
-        /* คู่มือลับ */
-        #manual-overlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.98);
-            z-index: 100;
-            padding: 30px;
-            box-sizing: border-box;
-            border-radius: 15px;
-            text-align: left;
-            border: 2px solid var(--gold);
-        }
-
-        .hint-item {
-            color: var(--gold);
-            margin-bottom: 15px;
-            line-height: 1.4;
-            font-size: 0.9rem;
-        }
-
-        /* สีสายไฟ */
-        .w0 { background: #e74c3c; } .w1 { background: #3498db; }
-        .w2 { background: #2ecc71; } .w3 { background: #f1c40f; }
-        .w4 { background: #9b59b6; } .w5 { background: #e67e22; }
-        .w6 { background: #ecf0f1; } .w7 { background: #34495e; }
-        .w8 { background: #1abc9c; } .w9 { background: #d35400; }
+        :root { --danger: #ff4d4d; --success: #2ecc71; --bg: #050505; --panel: #1a1a1a; --gold: #f1c40f; }
+        body { background-color: var(--bg); color: #ecf0f1; font-family: 'Courier New', monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #app-container { background: var(--panel); padding: 30px; border: 4px solid #333; border-radius: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.8); width: 90%; max-width: 450px; position: relative; }
+        .digital-screen { background: #000; border: 2px solid #444; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .timer { font-size: 2.5rem; color: var(--danger); text-shadow: 0 0 10px var(--danger); margin: 0; font-weight: bold; }
+        .progress-bar { color: var(--gold); font-size: 1rem; margin-top: 10px; letter-spacing: 2px; }
+        .wire-box { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 20px; }
+        .wire { width: 100%; height: 80px; border-radius: 5px; cursor: pointer; transition: 0.3s; box-shadow: inset -4px 0 6px rgba(0,0,0,0.4); position: relative; }
+        .wire:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .wire.cut { height: 25px; background: #111 !important; cursor: default; box-shadow: none; opacity: 0.3; transform: translateY(10px); }
+        #manual-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 100; padding: 25px; box-sizing: border-box; border-radius: 15px; border: 2px solid var(--gold); overflow-y: auto; text-align: left; }
+        input { background: #000; border: 1px solid var(--success); color: var(--success); padding: 12px; border-radius: 5px; width: 80%; text-align: center; font-size: 1.2rem; margin-bottom: 15px; outline: none; }
+        button { background: #333; color: #fff; border: 1px solid #555; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: inherit; transition: 0.2s; }
+        button:hover { background: #444; }
+        button.primary { background: var(--success); color: #000; font-weight: bold; border: none; }
+        /* Wire Colors */
+        .w0{background:#ff3e3e} .w1{background:#3498db} .w2{background:#2ecc71} .w3{background:#f1c40f} .w4{background:#9b59b6}
+        .w5{background:#e67e22} .w6{background:#ecf0f1} .w7{background:#34495e} .w8{background:#1abc9c} .w9{background:#d35400}
     </style>
 </head>
 <body>
@@ -145,79 +30,95 @@
     <div id="app-container">
         <div id="game-view">
             <div class="digital-screen">
-                <p class="timer">00:12:09</p>
-                <small style="color:#555">DETECTING VOLTAGE...</small>
+                <p class="timer" id="timer-text">00:08:45</p>
+                <div class="progress-bar" id="progress">STEP: 0 / 10</div>
             </div>
             <div class="wire-box" id="wire-grid"></div>
-            <button onclick="toggleManual(true)">📖 เปิดไฟล์คดี (Top Secret)</button>
+            <button onclick="toggleManual(true)">📖 วิเคราะห์ลำดับ (Manual)</button>
         </div>
 
         <div id="lock-view" style="display: none;">
             <div class="digital-screen">
-                <p id="lock-status" style="font-size: 2rem; font-weight: bold;"></p>
+                <p id="lock-status" style="font-size: 2.2rem; font-weight: bold; margin: 0;"></p>
             </div>
-            <p id="lock-msg" style="margin-bottom: 20px;"></p>
-            <input type="text" id="unlock-code" placeholder="ป้อนรหัสเปิดการทำงาน">
+            <p id="lock-msg" style="margin-bottom: 20px; font-size: 0.9rem; color: #888;"></p>
+            <input type="text" id="unlock-code" placeholder="ป้อนรหัสกู้คืนระบบ">
             <br>
-            <button class="primary" onclick="attemptUnlock()">ACTIVATE SYSTEM</button>
+            <button class="primary" onclick="attemptUnlock()">RESTORE SYSTEM</button>
         </div>
 
         <div id="manual-overlay">
-            <h2 style="color:var(--gold); border-bottom: 1px solid var(--gold);">POLICE MANUAL</h2>
-            <div id="hints-list"></div>
-            <button onclick="toggleManual(false)" style="margin-top: 20px;">ปิดหน้าต่าง</button>
+            <h2 style="color:var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 10px;">TOP SECRET: CASE FILE</h2>
+            <div id="hints-list" style="color:var(--gold); font-size: 0.9rem; line-height: 1.6;"></div>
+            <button onclick="toggleManual(false)" style="margin-top: 20px; width: 100%;">กลับไปที่แผนผัง</button>
         </div>
     </div>
 
     <script>
-        const KEY_STATUS = "bomb_v3_status";
-        const SECRET_CODE = "gurabud";
-        const wireNames = ["แดง", "น้ำเงิน", "เขียว", "เหลือง", "ม่วง", "ส้ม", "ขาว", "เทาเข้ม", "เขียวมินต์", "ส้มอิฐ"];
+        const MASTER_CODE = "gurabud";
+        const STORAGE_KEY = "conan_v10_state";
+        const wireNames = ["แดง", "น้ำเงิน", "เขียว", "เหลือง", "ม่วง", "ส้ม", "ขาว", "เทาเข้ม", "เขียวมินต์", "น้ำตาล"];
         
-        // สุ่มสายไฟที่ถูกต้อง
-        let correctWire = Math.floor(Math.random() * 10);
+        let sequence = [];
+        let currentStep = 0;
 
+        // Initialize Game Logic
         function init() {
-            const status = localStorage.getItem(KEY_STATUS);
-            if (status) {
-                showLockScreen(status);
+            const savedState = localStorage.getItem(STORAGE_KEY);
+            if (savedState) {
+                showLockScreen(savedState);
             } else {
+                // สุ่มลำดับ 0-9 แบบไม่ซ้ำกัน
+                sequence = Array.from({length: 10}, (_, i) => i).sort(() => Math.random() - 0.5);
                 renderWires();
-                generateHints();
+                generateConanHints();
             }
         }
 
         function renderWires() {
             const grid = document.getElementById('wire-grid');
+            grid.innerHTML = '';
             for (let i = 0; i < 10; i++) {
                 const w = document.createElement('div');
                 w.className = `wire w${i}`;
+                w.id = `wire-${i}`;
                 w.onclick = () => cut(i);
                 grid.appendChild(w);
             }
         }
 
-        function generateHints() {
+        function generateConanHints() {
             const list = document.getElementById('hints-list');
-            const isEven = correctWire % 2 === 0;
+            let hintHTML = `<p><b>วิเคราะห์ลำดับการตัดสายไฟจากพยานหลักฐาน:</b></p>`;
             
-            // ปริศนาแบบโคนัน (ยากและต้องตีความ)
-            const riddleSet = [
-                `• "ความจริงมีเพียงหนึ่งเดียว": สายที่ถูกต้องคือสายหมายเลข ${correctWire + 1} ในลำดับจากซ้ายไปขวา`,
-                `• "คำให้การของพยาน": สายเลข ${ (correctWire + 1) % 10 } เป็นสายลวงที่ถูกติดตั้งไว้หลอกคุณ`,
-                `• "รหัสคณิตศาสตร์": หากนำหมายเลขสายไปยกกำลังสอง ผลลัพธ์หลักหน่วยจะไม่ใช่ ${ (Math.pow(correctWire + 1, 2) + 1) % 10 }`,
-                `• "ตรรกะสุดท้าย": สายนี้เป็นเลข ${isEven ? 'คู่' : 'คี่'} ตามรหัสที่คนร้ายทิ้งไว้ในที่เกิดเหตุ`
-            ];
-
-            list.innerHTML = riddleSet.map(h => `<div class="hint-item">${h}</div>`).join('');
+            // ปริศนาบอกใบ้ 3 สายแรกแบบเนียนๆ
+            hintHTML += `<p>1. จุดเริ่มต้นของโชคชะตาคือสายลำดับที่ ${sequence[0] + 1} จากซ้ายมือ</p>`;
+            hintHTML += `<p>2. ร่องรอยถัดไปนำไปสู่สายที่มีสี "${wireNames[sequence[1]]}"</p>`;
+            hintHTML += `<p>3. สายที่สามซ่อนอยู่ในรหัส Index หมายเลข ${sequence[2]}</p>`;
+            hintHTML += `<p style="margin-top:15px; border-top:1px dashed #444; padding-top:10px; color:#666;">
+                         <i>"ความจริงมีเพียงหนึ่งเดียว... แม้ลำดับจะซับซ้อน แต่ถ้ามองให้ดีจะเห็นเส้นทาง"</i></p>`;
+            
+            // แอบใส่เฉลยเล็กๆ ไว้ (สำหรับ Dev)
+            hintHTML += `<p style="font-size: 0.7rem; color: #222;">Sequence: ${sequence.join(' - ')}</p>`;
+            
+            list.innerHTML = hintHTML;
         }
 
         function cut(id) {
-            if (id === correctWire) {
-                localStorage.setItem(KEY_STATUS, 'cleared');
-                showLockScreen('cleared');
+            const wireEl = document.getElementById(`wire-${id}`);
+            if (wireEl.classList.contains('cut')) return;
+
+            if (id === sequence[currentStep]) {
+                wireEl.classList.add('cut');
+                currentStep++;
+                document.getElementById('progress').innerText = `STEP: ${currentStep} / 10`;
+                
+                if (currentStep === 10) {
+                    localStorage.setItem(STORAGE_KEY, 'cleared');
+                    showLockScreen('cleared');
+                }
             } else {
-                localStorage.setItem(KEY_STATUS, 'dead');
+                localStorage.setItem(STORAGE_KEY, 'dead');
                 showLockScreen('dead');
             }
         }
@@ -231,12 +132,12 @@
             if (status === 'dead') {
                 title.innerText = "BOOM! 💥";
                 title.style.color = "var(--danger)";
-                msg.innerText = "อุปกรณ์ถูกทำลายแล้ว... 'ในคดีนี้คุณแพ้พ่าย'";
+                msg.innerText = "การวิเคราะห์ผิดพลาด... ระเบิดทำงานทันที!";
                 document.body.style.backgroundColor = "#1a0000";
             } else {
                 title.innerText = "SUCCESS 🎖️";
                 title.style.color = "var(--success)";
-                msg.innerText = "ปิดการทำงานสำเร็จ! ระบบถูกล็อคเพื่อตรวจสอบพยานหลักฐาน";
+                msg.innerText = "ปิดการทำงานครบ 10 จุด! คุณคือสุดยอดนักสืบ";
                 document.body.style.backgroundColor = "#001a00";
             }
         }
@@ -247,12 +148,12 @@
 
         function attemptUnlock() {
             const val = document.getElementById('unlock-code').value.toLowerCase();
-            if (val === SECRET_CODE) {
-                localStorage.removeItem(KEY_STATUS);
-                alert("SYSTEM REBOOT... กลับเข้าสู่สถานการณ์ปกติ");
+            if (val === MASTER_CODE) {
+                localStorage.removeItem(STORAGE_KEY);
+                alert("SYSTEM REBOOTED... โอกาสครั้งใหม่มาถึงแล้ว");
                 location.reload();
             } else {
-                alert("รหัสไม่ถูกต้อง! อย่าพยายามเดาสุ่มในที่เกิดเหตุ");
+                alert("รหัสไม่ถูกต้อง! อย่าทำอะไรบุ่มบ่าม!");
             }
         }
 
