@@ -3,146 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The One-Shot Bomb 💣</title>
+    <title>THE ULTIMATE BOMB 💣</title>
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --bomb-red: #ff3e3e;
-            --wire-gray: #444;
+            --danger: #ff0000;
+            --success: #00ff44;
+            --bg: #0a0a0a;
+            --panel: #222;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: white;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden;
-        }
-
-        #bomb-container {
-            background: #333;
-            padding: 30px;
-            border-radius: 15px;
-            border: 5px solid #222;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.2);
             text-align: center;
         }
 
-        .timer {
-            font-size: 4rem;
-            color: var(--bomb-red);
-            text-shadow: 0 0 10px var(--bomb-red);
-            margin-bottom: 20px;
-            background: #111;
-            padding: 10px;
-            border-radius: 5px;
+        #app {
+            background: var(--panel);
+            padding: 40px;
+            border: 4px solid #444;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
         }
 
-        .wire-rack {
+        .screen {
+            background: #000;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid #333;
+        }
+
+        .status-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin: 0;
+        }
+
+        .wire-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 15px;
+            padding: 20px;
         }
 
-        .wire {
-            width: 20px;
-            height: 80px;
-            background: var(--wire-gray);
+        .wire-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wire-cable {
+            width: 12px;
+            height: 100px;
+            border-radius: 6px;
             cursor: pointer;
-            border-radius: 5px;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
             position: relative;
+            box-shadow: inset -3px 0 5px rgba(0,0,0,0.5);
         }
 
-        .wire:hover {
+        .wire-cable:hover {
             transform: scale(1.1);
-            filter: brightness(1.2);
+            filter: brightness(1.3);
+            box-shadow: 0 0 15px currentColor;
         }
 
-        .wire.cut {
-            height: 30px;
+        .wire-cable.cut {
+            height: 40px;
             background: #111 !important;
             cursor: default;
+            transform: translateY(-10px);
+            box-shadow: none;
         }
 
-        h1 { margin-top: 0; color: #aaa; }
-        p { font-size: 0.9rem; color: #666; }
+        .input-group {
+            margin-top: 25px;
+            animation: fadeIn 1s;
+        }
 
-        /* สีสายไฟที่แตกต่างกัน */
-        .w0 { background: #e74c3c; } .w1 { background: #3498db; }
-        .w2 { background: #2ecc71; } .w3 { background: #f1c40f; }
-        .w4 { background: #9b59b6; } .w5 { background: #e67e22; }
-        .w6 { background: #ecf0f1; } .w7 { background: #34495e; }
-        .w8 { background: #1abc9c; } .w9 { background: #d35400; }
+        input {
+            background: #111;
+            border: 2px solid #444;
+            color: var(--success);
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            width: 70%;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        button {
+            background: var(--success);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        button:hover { opacity: 0.8; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* สีสายไฟ */
+        .color-0 { background: #ff3e3e; } .color-1 { background: #3e8bff; }
+        .color-2 { background: #3eff8b; } .color-3 { background: #f4ff3e; }
+        .color-4 { background: #ff3ef4; } .color-5 { background: #3efff4; }
+        .color-6 { background: #ffffff; } .color-7 { background: #ffa63e; }
+        .color-8 { background: #8e3eff; } .color-9 { background: #555555; }
     </style>
 </head>
 <body>
 
-    <div id="game-ui">
-        <h1>BOMB DEFUSAL</h1>
-        <div id="bomb-container">
-            <div class="timer" id="timer-display">00:30</div>
-            <div class="wire-rack" id="wire-rack">
-                </div>
+    <div id="app">
+        <div id="game-layer">
+            <div class="screen">
+                <p id="display-text" class="status-text" style="color: var(--danger);">00:30</p>
+            </div>
+            <div class="wire-grid" id="wire-grid"></div>
+            <p style="color: #888;">เลือกระหว่าง "รอด" หรือ "บึ้ม"</p>
         </div>
-        <p>ระวัง: ตัดผิดชีวิตเปลี่ยน (และเล่นไม่ได้อีกเลย)</p>
-    </div>
 
-    <div id="dead-ui" style="display:none; text-align:center;">
-        <h1 style="color:red; font-size: 5rem;">BOOM! 💥</h1>
-        <p>อุปกรณ์ของคุณถูกทำลายแล้ว... เข้าไปแก้ Code เพื่อฟื้นคืนชีพ</p>
+        <div id="lock-layer" style="display: none;">
+            <div class="screen">
+                <p id="lock-title" class="status-text"></p>
+            </div>
+            <p id="lock-desc"></p>
+            <div class="input-group">
+                <input type="text" id="passcode" placeholder="ENTER CODE">
+                <br>
+                <button onclick="unlock()">ACTIVATE SYSTEM</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        const wireRack = document.getElementById('wire-rack');
-        const gameUI = document.getElementById('game-ui');
-        const deadUI = document.getElementById('dead-ui');
+        const MASTER_CODE = "gurabud";
+        const STORAGE_KEY = "bomb_system_state";
+        
+        const wireGrid = document.getElementById('wire-grid');
+        const gameLayer = document.getElementById('game-layer');
+        const lockLayer = document.getElementById('lock-layer');
+        const lockTitle = document.getElementById('lock-title');
+        const lockDesc = document.getElementById('lock-desc');
+        const displayText = document.getElementById('display-text');
 
-        // สุ่มสายที่ "รอด" (มีแค่ 1 เส้นที่ตัดแล้วชนะ)
-        const correctWire = Math.floor(Math.random() * 10);
+        // สุ่มสายที่ถูกต้อง
+        let correctWire = Math.floor(Math.random() * 10);
 
-        // เช็คสถานะการล็อคเกม
-        if (localStorage.getItem('isDead') === 'true') {
-            gameUI.style.display = 'none';
-            deadUI.style.display = 'block';
-            document.body.style.backgroundColor = 'black';
-        }
-
-        // สร้างสายไฟ 10 เส้น
-        for (let i = 0; i < 10; i++) {
-            const wire = document.createElement('div');
-            wire.className = `wire w${i}`;
-            wire.onclick = () => cutWire(i, wire);
-            wireRack.appendChild(wire);
-        }
-
-        function cutWire(id, element) {
-            if (element.classList.contains('cut')) return;
-            
-            element.classList.add('cut');
-
-            if (id === correctWire) {
-                alert("ยินดีด้วย! คุณกู้ระเบิดสำเร็จ 🎖️");
-                // ถ้าชนะ จะให้เล่นต่อได้ หรือจะล็อคว่าชนะก็ได้แล้วแต่ชอบ
+        function checkState() {
+            const state = localStorage.getItem(STORAGE_KEY);
+            if (state === 'exploded') {
+                showLock('BOOM!', 'อุปกรณ์ถูกทำลายถาวร', '#ff0000');
+            } else if (state === 'cleared') {
+                showLock('CLEAR', 'ภารกิจสำเร็จ ระบบล็อคชั่วคราว', '#00ff44');
             } else {
-                localStorage.setItem('isDead', 'true');
-                alert("ตู้มมมมมม! สายไฟผิดเส้น!");
-                location.reload();
+                renderWires();
             }
         }
 
-        // ระบบคืนชีพ (พิมพ์ revive() ใน Console ของ Browser)
-        window.revive = function() {
-            localStorage.removeItem('isDead');
-            location.reload();
-            console.log("Rebooting system... สภาพกลับมา 100%");
-        };
+        function renderWires() {
+            wireGrid.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const wrap = document.createElement('div');
+                wrap.className = 'wire-wrapper';
+                const wire = document.createElement('div');
+                wire.className = `wire-cable color-${i}`;
+                wire.onclick = () => cutWire(i, wire);
+                wrap.appendChild(wire);
+                wireGrid.appendChild(wrap);
+            }
+        }
+
+        function cutWire(id, el) {
+            if (id === correctWire) {
+                localStorage.setItem(STORAGE_KEY, 'cleared');
+                showLock('CLEAR', 'รอดตาย! ระบบเข้าสู่โหมดปลอดภัย', '#00ff44');
+            } else {
+                localStorage.setItem(STORAGE_KEY, 'exploded');
+                showLock('BOOM!', 'สายผิด! ระเบิดทำงานแล้ว', '#ff0000');
+            }
+        }
+
+        function showLock(title, desc, color) {
+            gameLayer.style.display = 'none';
+            lockLayer.style.display = 'block';
+            lockTitle.innerText = title;
+            lockTitle.style.color = color;
+            lockDesc.innerText = desc;
+            document.body.style.backgroundColor = (title === 'BOOM!') ? '#1a0000' : '#001a00';
+        }
+
+        function unlock() {
+            const input = document.getElementById('passcode').value;
+            if (input.toLowerCase() === MASTER_CODE) {
+                localStorage.removeItem(STORAGE_KEY);
+                alert("SYSTEM REBOOTED...");
+                location.reload();
+            } else {
+                alert("WRONG CODE!");
+            }
+        }
+
+        checkState();
     </script>
 </body>
 </html>
-
