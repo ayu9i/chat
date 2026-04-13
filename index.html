@@ -3,42 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DETECTIVE CONAN: THE FINAL CIRCUIT 💣</title>
+    <title>CONAN: THE MASTERMIND 💣</title>
     <style>
         :root { --danger: #ff0000; --success: #00ff00; --gold: #ffd700; --bg: #050505; }
         body { background-color: var(--bg); color: white; font-family: 'Courier New', monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        #app-container { background: #1a1a1a; padding: 25px; border: 4px solid #333; border-radius: 20px; box-shadow: 0 0 30px rgba(255,0,0,0.2); width: 90%; max-width: 480px; position: relative; }
+        #app-container { background: #1a1a1a; padding: 25px; border: 4px solid #333; border-radius: 20px; box-shadow: 0 0 30px rgba(255,0,0,0.2); width: 95%; max-width: 480px; position: relative; }
         
-        /* Digital Timer & Screen */
-        .digital-screen { background: #000; border: 2px solid #444; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; position: relative; }
-        .timer { font-size: 3.5rem; color: var(--danger); text-shadow: 0 0 10px var(--danger); font-weight: bold; margin: 0; }
-        .blink { animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-
-        /* Wires & Light Effect */
+        /* Digital Screen */
+        .digital-screen { background: #000; border: 2px solid #444; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        .timer { font-size: 3.5rem; color: var(--danger); text-shadow: 0 0 10px var(--danger); font-weight: bold; }
+        
+        /* Wires */
         .wire-box { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-        .wire-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; }
-        .wire { width: 100%; height: 80px; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: inset -4px 0 6px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
-        
-        /* ไฟวิ่งในสาย */
-        .wire::after { content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 40%; background: rgba(255,255,255,0.3); animation: flow 1.5s linear infinite; }
+        .wire { width: 100%; height: 80px; border-radius: 8px; cursor: pointer; position: relative; overflow: hidden; transition: 0.3s; box-shadow: inset -4px 0 6px rgba(0,0,0,0.5); }
+        .wire::after { content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 40%; background: rgba(255,255,255,0.2); animation: flow 1.5s linear infinite; }
         @keyframes flow { from { top: -100%; } to { top: 100%; } }
-        
         .wire.cut { height: 20px; background: #111 !important; cursor: default; opacity: 0.3; transform: translateY(15px); }
-        .wire.cut::after { display: none; }
 
-        /* Schematic & Scoreboard */
-        #modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,20,0,0.95); z-index: 100; border-radius: 20px; padding: 20px; box-sizing: border-box; border: 2px solid var(--success); overflow-y: auto; color: var(--success); font-size: 0.8rem; }
-        .fake-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .fake-table td { border-bottom: 1px solid #004400; padding: 5px; }
+        /* Setup Phase */
+        .setup-screen { text-align: center; }
+        .diff-btn { padding: 10px; margin: 5px; cursor: pointer; border: 1px solid var(--gold); background: #222; color: var(--gold); border-radius: 5px; transition: 0.3s; }
+        .diff-btn:hover { background: var(--gold); color: black; }
+        .diff-btn.active { background: var(--gold); color: black; font-weight: bold; }
 
-        /* Button Style */
-        button { background: #222; color: var(--success); border: 1px solid var(--success); padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 5px; font-family: inherit; }
-        input { background: #000; border: 1px solid var(--danger); color: var(--danger); padding: 15px; width: 80%; border-radius: 5px; text-align: center; margin-bottom: 10px; outline: none; }
+        /* UI Elements */
+        #modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,15,0,0.98); z-index: 100; border-radius: 20px; padding: 20px; box-sizing: border-box; border: 2px solid var(--success); overflow-y: auto; color: var(--success); }
+        button { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; font-family: inherit; }
+        input[type="number"], input[type="text"] { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 10px; border-radius: 5px; text-align: center; width: 100px; margin: 10px; }
 
-        /* Shake Effect */
         .shake { animation: shake 0.2s infinite; }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -2px); } 100% { transform: translate(1px, 2px); } }
+        @keyframes shake { 0%{transform: translate(1px, 1px)} 50%{transform: translate(-1px, -2px)} 100%{transform: translate(1px, 2px)} }
         
         .w0{background:#ff3e3e} .w1{background:#3498db} .w2{background:#2ecc71} .w3{background:#f1c40f} .w4{background:#9b59b6}
         .w5{background:#e67e22} .w6{background:#ecf0f1} .w7{background:#34495e} .w8{background:#1abc9c} .w9{background:#d35400}
@@ -47,116 +41,111 @@
 <body>
 
     <div id="app-container">
-        <div id="game-view">
+        <div id="setup-view" class="setup-screen">
+            <h2 style="color:var(--gold)">BOMB CONSTRUCTION</h2>
+            <p>1. เลือกความยาก (ตัวคูณความเร็วเวลา)</p>
+            <button class="diff-btn" onclick="setDiff(1, this)">ง่าย (90%)</button>
+            <button class="diff-btn active" onclick="setDiff(1.5, this)">ปานกลาง (80%)</button>
+            <button class="diff-btn" onclick="setDiff(3, this)">ยาก (100%)</button>
+            
+            <p style="margin-top:20px;">2. ตั้งเวลาถอยหลัง (วินาที)</p>
+            <input type="number" id="time-input" value="30" min="5" max="999">
+            
+            <button onclick="startBombing()" style="background:var(--danger); color:white; font-size:1.2rem; font-weight:bold; margin-top:20px; border:none;">ARM BOMB! 🧨</button>
+        </div>
+
+        <div id="game-view" style="display: none;">
             <div class="digital-screen">
-                <p class="timer" id="countdown">00:45</p>
-                <div style="color:var(--gold); font-size: 0.8rem;">VOLTAGE: 220V [STABLE]</div>
+                <p class="timer" id="countdown">00:00</p>
+                <div id="difficulty-tag" style="color:var(--gold); font-size: 0.8rem;">MODE: NORMAL</div>
             </div>
             <div class="wire-box" id="wire-grid"></div>
-            <button onclick="openModal('schematic')">📁 ผังวงจร (SCHEMATIC)</button>
-            <button onclick="openModal('scores')">🏆 สกอร์บอร์ด (WORLD RANK)</button>
+            <button onclick="openManual()">📁 แผนผังวงจร (SCHEMATIC)</button>
         </div>
 
         <div id="lock-view" style="display: none; text-align: center;">
-            <h1 id="lock-status"></h1>
+            <h1 id="lock-status" style="font-size:3rem;"></h1>
             <p id="lock-msg"></p>
-            <input type="text" id="unlock-code" placeholder="ป้อนรหัสฟื้นคืนชีพ...">
-            <button onclick="attemptUnlock()" style="background:var(--danger); color:white;">RESTORE DATA</button>
+            <input type="text" id="unlock-code" placeholder="ป้อนรหัสฟื้นคืนชีพ..." style="width:80%; color:var(--danger); border-color:var(--danger)">
+            <button onclick="attemptUnlock()" style="background:var(--danger); color:white;">RESTORE SYSTEM</button>
         </div>
 
         <div id="modal">
             <div id="modal-content"></div>
-            <button onclick="closeModal()" style="margin-top:20px;">ปิดหน้าต่าง</button>
+            <button onclick="closeModal()">CLOSE</button>
         </div>
     </div>
 
     <script>
         const MASTER_CODE = "gurabud";
-        const STORAGE_KEY = "conan_ultra_state";
-        let sequence = [], currentStep = 0, timeLeft = 45, timer;
+        const STORAGE_KEY = "conan_omega_state";
+        let sequence = [], currentStep = 0, timeLeft = 30, timer, timeMult = 1.5;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        function playSound(freq, dur) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.value = freq; gain.gain.value = 0.1;
-            osc.start(); setTimeout(() => osc.stop(), dur);
+        function setDiff(val, btn) {
+            timeMult = val;
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('difficulty-tag').innerText = val === 1 ? "MODE: EASY (90%)" : val === 1.5 ? "MODE: NORMAL (80%)" : "MODE: HARD (100%)";
         }
 
-        function init() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) return showLock(saved);
+        function startBombing() {
+            timeLeft = parseInt(document.getElementById('time-input').value);
+            document.getElementById('setup-view').style.display = 'none';
+            document.getElementById('game-view').style.display = 'block';
             
             sequence = Array.from({length: 10}, (_, i) => i).sort(() => Math.random() - 0.5);
             const grid = document.getElementById('wire-grid');
+            grid.innerHTML = "";
             for(let i=0; i<10; i++) {
-                grid.innerHTML += `<div class="wire-wrapper"><div class="wire w${i}" id="w${i}" onclick="cut(${i})"></div></div>`;
+                grid.innerHTML += `<div class="wire w${i}" id="w${i}" onclick="cut(${i})"></div>`;
             }
             startTimer();
         }
 
         function startTimer() {
             timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('countdown').innerText = `00:${timeLeft < 10 ? '0'+timeLeft : timeLeft}`;
-                playSound(800, 50);
-                if(timeLeft <= 10) document.getElementById('countdown').classList.add('blink');
+                timeLeft -= (0.1 * timeMult); // เวลาลดตามความยาก
+                let display = Math.max(0, Math.ceil(timeLeft));
+                document.getElementById('countdown').innerText = `00:${display < 10 ? '0'+display : display}`;
+                
                 if(timeLeft <= 5) document.getElementById('app-container').classList.add('shake');
                 if(timeLeft <= 0) end('dead');
-            }, 1000);
+            }, 100);
         }
 
         function cut(id) {
             if(document.getElementById(`w${id}`).classList.contains('cut')) return;
-            if (navigator.vibrate) navigator.vibrate(50);
-            
             if (id === sequence[currentStep]) {
                 document.getElementById(`w${id}`).classList.add('cut');
-                playSound(1200, 100);
                 currentStep++;
                 if (currentStep === 10) end('won');
-            } else {
-                end('dead');
-            }
+            } else { end('dead'); }
         }
 
         function end(s) {
             clearInterval(timer);
-            if(s === 'dead' && navigator.vibrate) navigator.vibrate([500, 100, 500]);
             localStorage.setItem(STORAGE_KEY, s);
             showLock(s);
         }
 
         function showLock(s) {
+            document.getElementById('setup-view').style.display = 'none';
             document.getElementById('game-view').style.display = 'none';
             document.getElementById('lock-view').style.display = 'block';
-            document.getElementById('lock-status').innerText = s === 'dead' ? "BOOM! 💥" : "SUCCESS 🎖️";
-            document.getElementById('lock-status').style.color = s === 'dead' ? 'red' : 'lime';
-            document.getElementById('lock-msg').innerText = s === 'dead' ? "เครื่องถูกล็อคเนื่องจากระเบิดทำงาน" : "ระบบถูกล็อคเพื่อความปลอดภัย";
+            const title = document.getElementById('lock-status');
+            title.innerText = s === 'dead' ? "BOOM! 💥" : "SUCCESS 🎖️";
+            title.style.color = s === 'dead' ? 'red' : 'lime';
+            document.getElementById('lock-msg').innerText = s === 'dead' ? "คุณทำพลาด... ความลับหายไปในกองเพลิง" : "กู้สำเร็จ! คุณคือตำนาน";
         }
 
-        function openModal(type) {
-            const m = document.getElementById('modal');
-            const c = document.getElementById('modal-content');
-            m.style.display = 'block';
-            if(type === 'schematic') {
-                c.innerHTML = `<h3>[ CIRCUIT SCHEMATIC ]</h3><pre style="font-size:0.6rem;">
-[MAIN_PWR]----(W_${sequence[0]})----[CPU]
-  |      HINT: อย่าเชื่อสายสี${currentStep % 2 === 0 ? 'แดง' : 'น้ำเงิน'}
-  +----(W_${sequence[1]})----[LNK_A]
-  |      ERR_LOG: Bypass W_${Math.floor(Math.random()*10)}
-  +----(W_${sequence[2]})----[GATE_7]
-------------------------------------
-[!] WARNING: ผังวงจรอาจมีการเปลี่ยนแปลงจากผู้สร้าง [!]</pre>`;
-            } else {
-                c.innerHTML = `<h3>🏆 TOP DEFUSERS</h3><table class="fake-table">
-                <tr><td>1. Kudo_Shinichi</td><td>00:05</td></tr>
-                <tr><td>2. Kaitou_Kid</td><td>00:08</td></tr>
-                <tr><td>3. Amuro_Tooru</td><td>00:12</td></tr>
-                <tr><td>4. YOU</td><td>--:--</td></tr>
-                </table>`;
-            }
+        function openManual() {
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('modal-content').innerHTML = `<h3>[ CIRCUIT SCHEMATIC ]</h3><pre style="white-space: pre-wrap;">
+[!] ลำดับกระแสไฟถูกรบกวน [!]
+ลำดับเริ่มต้น: W_${sequence[0]} -> W_${sequence[1]}
+ลำดับที่เหลือ: ${sequence.slice(2).join(' > ')}
+HINT: ความยากของคุณส่งผลต่อความเสถียรของนาฬิกา!</pre>`;
         }
 
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
@@ -165,10 +154,12 @@
             if(document.getElementById('unlock-code').value.toLowerCase() === MASTER_CODE) {
                 localStorage.removeItem(STORAGE_KEY);
                 location.reload();
-            } else { alert("รหัสผิด!"); if(navigator.vibrate) navigator.vibrate(200); }
+            } else { alert("ACCESS DENIED!"); }
         }
 
-        init();
+        // Check persistent state
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(saved) showLock(saved);
     </script>
 </body>
 </html>
